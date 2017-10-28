@@ -1,6 +1,8 @@
 # Both of these libraries are used to connect and read data from a website.
 # Python 3.X uses urllib.request, and Python 2.X uses urllib2
 
+from RecipeMgr import RecipeClass
+
 try:
     import urllib.request as urllib2
 except ImportError:
@@ -94,9 +96,10 @@ def GetRecipeInstructions(recipeText):
 urlAddress = 'http://www.foodnetwork.com/recipes/ina-garten/sauteed-broccolini-and-garlic-recipe.html'
 urlText = GetUrlText(urlAddress)
 recipieText = GetRecipeText(urlText)
+newRecipe = RecipeClass()
 
-recipeName = GetRecipeName(recipieText)
-print(recipeName)
+newRecipe.RecipeName = GetRecipeName(recipieText)
+print(newRecipe.RecipeName)
 
 ingredList = GetIngredients(recipieText)
 ingredListLen = len(ingredList) // 3

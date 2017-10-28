@@ -1,0 +1,3 @@
+class RecipeClass:
+
+    RecipeName = ''
