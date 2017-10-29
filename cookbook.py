@@ -2,6 +2,7 @@
 # Python 3.X uses urllib.request, and Python 2.X uses urllib2
 
 from RecipeMgr import RecipeClass
+import json
 
 try:
     import urllib.request as urllib2
@@ -24,6 +25,12 @@ def GetUrlText(urlAddress):
         urlText = urlText.decode()
 
     return urlText
+
+def WriteRecipeList(recipeList):
+
+    with open('RecipeList.json', 'w') as outPtr:
+        json.dump(recipeList.__dict__, outPtr)
+
 
 #------------------------------------------------------------------------------------------------
 
@@ -98,13 +105,15 @@ urlText = GetUrlText(urlAddress)
 recipieText = GetRecipeText(urlText)
 newRecipe = RecipeClass()
 
-newRecipe.RecipeName = GetRecipeName(recipieText)
-print(newRecipe.RecipeName)
+newRecipe.SetRecipeName(GetRecipeName(recipieText))
+print(newRecipe.GetRecipeName())
 
-ingredList = GetIngredients(recipieText)
+newRecipe.SetIngredientList(GetIngredients(recipieText))
+ingredList = newRecipe.GetIngredientList()
 ingredListLen = len(ingredList) // 3
 for index in range(ingredListLen):
     print('{} {} {}'.format(ingredList['quantity' + str(index)], ingredList['units' + str(index)], ingredList['ingredient' + str(index)]))
 
 recipeInstructions = GetRecipeInstructions(recipieText)
 print(recipeInstructions)
+WriteRecipeList(newRecipe)
