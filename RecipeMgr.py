@@ -1,21 +1,27 @@
-class RecipeClass:
+import xml.sax
 
-    _RecipeName = None
-    _IngredientList = None
-    _RecipeInstructions = None
 
-    def __init__(self):
-        self._RecipeName = ''
+class RecipeClass(xml.sax.ContentHandler):
+
+    def __init__(self, recipeList=None):
+
+        self._Name = ''
         self._IngredientList = {}
-        self._RecipeInstructions = ''
+        self._Instructions = ''
 
-    def SetRecipeName(self, recipeName):
+        if recipeList != None:
 
-        self._RecipeName = recipeName
+            self._Name = recipeList['_Name']
+            self._IngredientList = recipeList['_IngredientList']
+            self._Instructions = recipeList['_Instructions']
 
-    def GetRecipeName(self):
+    def SetName(self, recipeName):
 
-        return (self._RecipeName)
+        self._Name = recipeName
+
+    def GetName(self):
+
+        return (self._Name)
 
     def SetIngredientList(self, ingredList):
 
@@ -24,3 +30,11 @@ class RecipeClass:
     def GetIngredientList(self):
 
         return (self._IngredientList)
+
+    def SetInstructions(self, instructions):
+
+        self._Instructions = instructions
+
+    def GetInstructions(self):
+
+        return (self._Instructions)

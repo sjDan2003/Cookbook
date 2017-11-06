@@ -2,7 +2,9 @@
 # Python 3.X uses urllib.request, and Python 2.X uses urllib2
 
 from RecipeMgr import RecipeClass
-import json
+import xml.etree.ElementTree as et
+import re
+from xml.etree.ElementTree import ElementTree
 
 try:
     import urllib.request as urllib2
@@ -10,6 +12,7 @@ except ImportError:
     import urllib2
 
 #------------------------------------------------------------------------------------------------
+
 
 def GetUrlText(urlAddress):
 
@@ -26,13 +29,20 @@ def GetUrlText(urlAddress):
 
     return urlText
 
-def WriteRecipeList(recipeList):
 
-    with open('RecipeList.json', 'w') as outPtr:
-        json.dump(recipeList.__dict__, outPtr)
+def WriteRecipeList(newRecipe):
 
+    tree = ElementTree()
+    root = et.Element('Cookbook')
+    recipe = et.SubElement(root, 'Recipe', attrib=newRecipe.__dict__)
+   # et.SubElement(recipe, 'Name', value=newRecipe.GetName())
+
+    # et.dump(root)
+
+    ElementTree(root).write('test.xhtml')
 
 #------------------------------------------------------------------------------------------------
+
 
 def GetRecipeText(urlText):
 
@@ -42,20 +52,24 @@ def GetRecipeText(urlText):
     endIndex = urlText.find(endText, startIndex)
     return(urlText[startIndex:endIndex])
 
+
 def GetRecipeAttr(recipieText, targetStr):
 
     startIndex = recipieText.find(targetStr) + len(targetStr)
     endIndex = recipieText.find('"', startIndex)
     return (recipieText[startIndex:endIndex])
 
+
 def GetRecipeName(recipieText):
 
     return (GetRecipeAttr(recipieText, '"name": "'))
+
 
 def IsValidUnit(measuringUnit):
 
     validMeasuringUnits = {'tablespoon', 'tablespoons', 'teaspoon', 'teaspoons' 'bunch', 'bunches', 'cup', 'cups'}
     return (measuringUnit in validMeasuringUnits)
+
 
 def GetIngredients(recipieText):
 
@@ -92,21 +106,25 @@ def GetIngredients(recipieText):
 
     return ingredList
 
+
 def GetRecipeInstructions(recipeText):
 
     startIndex = recipeText.find('recipeInstructions": [') + len('recipeInstructions": [')
     endIndex = recipeText.find(']', startIndex)
-    return (recipeText[startIndex:endIndex].strip().replace('"', '').replace('\n', ' '))
+    return (re.sub(' +', ' ', recipeText[startIndex:endIndex].strip().replace('",', '').replace('"', '').replace('\n', '')))
 
 #------------------------------------------------------------------------------------------------
 
+
 urlAddress = 'http://www.foodnetwork.com/recipes/ina-garten/sauteed-broccolini-and-garlic-recipe.html'
 urlText = GetUrlText(urlAddress)
-recipieText = GetRecipeText(urlText)
+
 newRecipe = RecipeClass()
 
-newRecipe.SetRecipeName(GetRecipeName(recipieText))
-print(newRecipe.GetRecipeName())
+recipieText = GetRecipeText(urlText)
+
+newRecipe.SetName(GetRecipeName(recipieText))
+print(newRecipe.GetName())
 
 newRecipe.SetIngredientList(GetIngredients(recipieText))
 ingredList = newRecipe.GetIngredientList()
@@ -116,4 +134,16 @@ for index in range(ingredListLen):
 
 recipeInstructions = GetRecipeInstructions(recipieText)
 print(recipeInstructions)
+newRecipe.SetInstructions(recipeInstructions)
 WriteRecipeList(newRecipe)
+xmlRecipeList = None
+with open('test.xhtml', 'r') as file:
+    tree = et.parse(file)
+    root = tree.getroot()
+    for child in root:
+        xmlRecipeList = child.attrib
+
+print(xmlRecipeList['_Name'])
+xmlRecipe = RecipeClass(xmlRecipeList)
+print(xmlRecipe.GetIngredientList())
+

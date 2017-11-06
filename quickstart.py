@@ -6,6 +6,7 @@ from apiclient import discovery
 from oauth2client import client
 from oauth2client import tools
 from oauth2client.file import Storage
+from googleapiclient.http import MediaFileUpload
 
 try:
     import argparse
@@ -48,6 +49,7 @@ def get_credentials():
         print('Storing credentials to ' + credential_path)
     return credentials
 
+
 def main():
     """Shows basic usage of the Google Drive API.
 
@@ -67,6 +69,11 @@ def main():
         print('Files:')
         for item in items:
             print('{0} ({1})'.format(item['name'], item['id']))
+
+    file_metadata = {'name' : 'testXml', 'mimeType' : 'application/vnd.google-apps.file'}
+    media = MediaFileUpload('test.xhtml', mimetype='text/xhtml')
+    file = drive_service.files().create(body=file_metadata, media_body=media, fields='id').execute()
+
 
 if __name__ == '__main__':
     main()
