@@ -114,36 +114,3 @@ def GetRecipeInstructions(recipeText):
     return (re.sub(' +', ' ', recipeText[startIndex:endIndex].strip().replace('",', '').replace('"', '').replace('\n', '')))
 
 #------------------------------------------------------------------------------------------------
-
-
-urlAddress = 'http://www.foodnetwork.com/recipes/ina-garten/sauteed-broccolini-and-garlic-recipe.html'
-urlText = GetUrlText(urlAddress)
-
-newRecipe = RecipeClass()
-
-recipieText = GetRecipeText(urlText)
-
-newRecipe.SetName(GetRecipeName(recipieText))
-print(newRecipe.GetName())
-
-newRecipe.SetIngredientList(GetIngredients(recipieText))
-ingredList = newRecipe.GetIngredientList()
-ingredListLen = len(ingredList) // 3
-for index in range(ingredListLen):
-    print('{} {} {}'.format(ingredList['quantity' + str(index)], ingredList['units' + str(index)], ingredList['ingredient' + str(index)]))
-
-recipeInstructions = GetRecipeInstructions(recipieText)
-print(recipeInstructions)
-newRecipe.SetInstructions(recipeInstructions)
-WriteRecipeList(newRecipe)
-xmlRecipeList = None
-with open('test.xhtml', 'r') as file:
-    tree = et.parse(file)
-    root = tree.getroot()
-    for child in root:
-        xmlRecipeList = child.attrib
-
-print(xmlRecipeList['_Name'])
-xmlRecipe = RecipeClass(xmlRecipeList)
-print(xmlRecipe.GetIngredientList())
-
