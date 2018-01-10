@@ -1,8 +1,21 @@
+import os
+
 import cookbook as cb
 from RecipeMgr import RecipeClass
-import xml.etree.ElementTree as et
 
-urlAddress = 'http://www.foodnetwork.com/recipes/ina-garten/sauteed-broccolini-and-garlic-recipe.html'
+def ListRecipes():
+
+    print('\n')
+
+    if os.path.exists(RecipeClass.recipePath) == False:
+        print('No Recipies Exist')
+
+    recipeList = os.listdir(RecipeClass.recipePath)
+
+    for recipe in recipeList:
+        print(recipe[0:len(recipe) - len('.json')])
+
+urlAddress = 'http://www.foodnetwork.com/recipes/rachael-ray/caprese-salad-recipe-1939232'
 urlText = cb.GetUrlText(urlAddress)
 
 newRecipe = RecipeClass()
@@ -21,17 +34,11 @@ for index in range(ingredListLen):
 recipeInstructions = cb.GetRecipeInstructions(recipieText)
 print(recipeInstructions)
 newRecipe.SetInstructions(recipeInstructions)
-cb.WriteRecipeList(newRecipe)
-xmlRecipeList = None
-with open('test.xhtml', 'r') as file:
-    tree = et.parse(file)
-    root = tree.getroot()
-    for child in root:
-        xmlRecipeList = child.attrib
 
-print(xmlRecipeList['_Name'])
-xmlRecipe = RecipeClass(xmlRecipeList)
-print(xmlRecipe.GetIngredientList())
+newRecipe.SaveRecipe()
+jsonRecipe = RecipeClass()
+jsonRecipe.LoadRecipe(newRecipe.GetName())
 
+print(jsonRecipe.GetName())
 
-print('Hello World')
+ListRecipes()

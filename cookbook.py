@@ -2,9 +2,7 @@
 # Python 3.X uses urllib.request, and Python 2.X uses urllib2
 
 from RecipeMgr import RecipeClass
-import xml.etree.ElementTree as et
 import re
-from xml.etree.ElementTree import ElementTree
 
 try:
     import urllib.request as urllib2
@@ -29,17 +27,6 @@ def GetUrlText(urlAddress):
 
     return urlText
 
-
-def WriteRecipeList(newRecipe):
-
-    tree = ElementTree()
-    root = et.Element('Cookbook')
-    recipe = et.SubElement(root, 'Recipe', attrib=newRecipe.__dict__)
-   # et.SubElement(recipe, 'Name', value=newRecipe.GetName())
-
-    # et.dump(root)
-
-    ElementTree(root).write('test.xhtml')
 
 #------------------------------------------------------------------------------------------------
 
