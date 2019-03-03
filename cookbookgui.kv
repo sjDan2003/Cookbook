@@ -1,0 +1,46 @@
+#:kivy 1.8.0
+
+<CookbookLayout>:
+    recipeList: recipeListId
+    recipeName: recipeNameId
+    cols: 2
+    rows: 1
+    spacing: 10
+    padding: 10
+
+    BoxLayout:
+        orientation: "vertical"
+        size_hint_x: .25
+        ListView:
+            id: recipeListId
+            size_hint_y: 1
+            item_strings: ["Pork Tenderloin", "Sous Vide Salmon"]
+        Button:
+            id: changeButtonId
+            size_hint_y: .25
+            text: "Change Recipe Name"
+            on_press: root.ChangeRecipeName()
+
+    BoxLayout:
+        orientation: "vertical"
+
+        Label:
+            id: recipeNameId
+            font_size: "50dp"
+            size_hint_y: .2
+            text: "Pork Tenderloin"
+
+        GridLayout:
+            cols: 2
+
+            Label:
+                id: recipeNameTitle
+                font_size: "30dp"
+                text: "Ingredients"
+
+            TextInput:
+                id: recipeInstructions
+                multiline: True
+
+
+
