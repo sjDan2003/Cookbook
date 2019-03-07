@@ -1,8 +1,18 @@
 #:kivy 1.8.0
+#: import main CookbookGui
+#: import ListItemButton kivy.uix.listview.ListItemButton
+#: import ListAdapter kivy.adapters.listadapter.ListAdapter
+
+
+<RecipeButton>:
+    on_press: app.root.ChangeRecipe(self.text)
+
 
 <CookbookLayout>:
     recipeList: recipeListId
     recipeName: recipeNameId
+    recipeInstructions: recipeInstructionsId
+    recipeIngredients: recipeIngredientsId
     cols: 2
     rows: 1
     spacing: 10
@@ -14,7 +24,8 @@
         ListView:
             id: recipeListId
             size_hint_y: 1
-            item_strings: ["Pork Tenderloin", "Sous Vide Salmon"]
+            adapter:
+                ListAdapter(data=["Pork Tenderloin", "Sous Vide Salmon"], cls=main.RecipeButton)
         Button:
             id: changeButtonId
             size_hint_y: .25
@@ -31,15 +42,16 @@
             text: "Pork Tenderloin"
 
         GridLayout:
+            size_hint_y: 1
             cols: 2
 
-            Label:
-                id: recipeNameTitle
+            TextInput:
+                id: recipeIngredientsId
                 font_size: "30dp"
                 text: "Ingredients"
 
             TextInput:
-                id: recipeInstructions
+                id: recipeInstructionsId
                 multiline: True
 
 

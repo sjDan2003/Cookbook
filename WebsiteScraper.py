@@ -3,14 +3,30 @@ import urllib.request
 import json
 
 
-url = 'https://www.runnersworld.com/recipes/irish-pork-stew-with-irish-stout-and-caraway-seeds'
+class RecipeObjectClass:
 
-source = urllib.request.urlopen(url).read()
-soup = bs.BeautifulSoup(source, 'lxml')
-print(soup.title)
-print(soup.title.string)
-print(soup.title.parent.name)
-print(soup.p)
+    def __init__(self, url):
 
-data = json.loads(soup.find('script', type='application/ld+json').text)
-print(data['headline'])
+        with urllib.request.urlopen(url) as response:
+
+            if response.status == 200:
+                source = response.read()
+                soup = bs.BeautifulSoup(source, 'lxml')
+
+                self.data = json.loads(soup.find('script', type='application/ld+json').text)
+                self.validData = True
+                print(response.status)
+            else:
+                self.validData = False
+
+    def GetRecipeName(self):
+
+        return self.data['headline']
+
+    def GetIngredients(self):
+
+        return self.data['recipeIngredient']
+
+    def GetInstructions(self):
+
+        return self.data['recipeInstructions']
