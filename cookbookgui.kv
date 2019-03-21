@@ -1,59 +1,124 @@
 #:kivy 1.8.0
 #: import main CookbookGui
-#: import ListItemButton kivy.uix.listview.ListItemButton
-#: import ListAdapter kivy.adapters.listadapter.ListAdapter
 
 
 <RecipeButton>:
-    on_press: app.root.ChangeRecipe(self.text)
+    on_press: root.ChangeRecipe(self.input_data)
 
 
-<CookbookLayout>:
+<RecipeImportScreen>:
+    urlInput: urlInputId
+    recipeName: recipeNameId
+    recipeInstructions: recipeInstructionsId
+    recipeIngredients: recipeIngredientsId
+    name: 'recipe import'
+    BoxLayout:
+        orientation: 'vertical'
+        BoxLayout:
+            orientation: 'horizontal'
+            size_hint_y: .05
+            Label:
+                text: 'Enter Url'
+                size_hint_x: .15
+            TextInput:
+                id: urlInputId
+                size_hint_x: 1
+                font_size: '12dp'
+                multiline: False
+            Button:
+                text: 'Import Recipe'
+                size_hint_x: .25
+                on_press: root.ImportRecipe()
+        BoxLayout:
+            orientation: "vertical"
+            size_hint_y: 1
+            Label:
+                id: recipeNameId
+                font_size: "50dp"
+                size_hint_y: .2
+                text: "Recipe Title"
+
+            GridLayout:
+                size_hint_y: 1
+                cols: 2
+
+                TextInput:
+                    id: recipeIngredientsId
+                    font_size: "20dp"
+
+                TextInput:
+                    id: recipeInstructionsId
+                    font_size: "20dp"
+                    multiline: True
+        BoxLayout:
+            orientation: 'horizontal'
+            size_hint_y: .1
+            Button:
+                text: 'Cancel'
+                on_press: root.CancelRecipeImport()
+            Button:
+                text: 'Confirm'
+                on_press: root.ConfirmRecipeImport()
+
+
+<RecipeViewScreen>:
     recipeList: recipeListId
     recipeName: recipeNameId
     recipeInstructions: recipeInstructionsId
     recipeIngredients: recipeIngredientsId
-    cols: 2
-    rows: 1
-    spacing: 10
-    padding: 10
 
-    BoxLayout:
-        orientation: "vertical"
-        size_hint_x: .25
-        ListView:
-            id: recipeListId
-            size_hint_y: 1
-            adapter:
-                ListAdapter(data=["Pork Tenderloin", "Sous Vide Salmon"], cls=main.RecipeButton)
-        Button:
-            id: changeButtonId
-            size_hint_y: .25
-            text: "Change Recipe Name"
-            on_press: root.ChangeRecipeName()
+    name: 'recipe view'
+    id: recipeViewScreenId
+    GridLayout:
+        cols: 2
+        rows: 1
+        spacing: 10
+        padding: 10
 
-    BoxLayout:
-        orientation: "vertical"
+        BoxLayout:
+            orientation: "vertical"
+            size_hint_x: .25
+            RecycleView:
+                data: []
+                id: recipeListId
+                viewclass: 'RecipeButton'
+                RecycleBoxLayout:
+                    default_size_hint: 1, None
+                    orientation: 'vertical'
+            Button:
+                id: changeButtonId
+                size_hint_y: .25
+                text: "Change Recipe Name"
+                on_press: root.ChangeRecipeName()
+            Button:
+                text: 'Go To Recipe Import'
+                size_hint_y: .25
+                on_press:
+                    root.manager.transition.direction = 'left'
+                    root.manager.current = 'recipe import'
 
-        Label:
-            id: recipeNameId
-            font_size: "50dp"
-            size_hint_y: .2
-            text: "Pork Tenderloin"
+        BoxLayout:
+            orientation: "vertical"
 
-        GridLayout:
-            size_hint_y: 1
-            cols: 2
+            Label:
+                id: recipeNameId
+                font_size: "50dp"
+                size_hint_y: .2
+                text: "Pork Tenderloin"
 
-            TextInput:
-                id: recipeIngredientsId
-                font_size: "25dp"
-                text: "Ingredients"
+            GridLayout:
+                size_hint_y: 1
+                cols: 2
 
-            TextInput:
-                id: recipeInstructionsId
-                font_size: "25dp"
-                multiline: True
+                TextInput:
+                    id: recipeIngredientsId
+                    font_size: "25dp"
+                    text: "Ingredients"
+
+                TextInput:
+                    id: recipeInstructionsId
+                    font_size: "25dp"
+                    multiline: True
 
 
 

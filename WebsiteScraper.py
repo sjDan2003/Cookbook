@@ -5,7 +5,16 @@ import json
 
 class RecipeObjectClass:
 
-    def __init__(self, url):
+    def __init__(self, recipeObj=None):
+
+        if recipeObj is None:
+            self.data = ''
+            self.validData = False
+        else:
+            self.data = recipeObj.data
+            self.validData = recipeObj.validData
+
+    def GetRecipeFromUrl(self, url):
 
         with urllib.request.urlopen(url) as response:
 
@@ -21,7 +30,12 @@ class RecipeObjectClass:
 
     def GetRecipeName(self):
 
-        return self.data['headline']
+        if 'name' in self.data:
+            return self.data['name']
+        elif 'headline' in self.data:
+            return self.data['headline']
+        else:
+            return ''
 
     def GetIngredients(self):
 
@@ -29,4 +43,10 @@ class RecipeObjectClass:
 
     def GetInstructions(self):
 
-        return self.data['recipeInstructions']
+        if 'recipeInstructions' in self.data:
+
+            return self.data['recipeInstructions']
+
+        else:
+
+            return ''
