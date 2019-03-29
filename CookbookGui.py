@@ -10,6 +10,9 @@ from WebsiteScraper import RecipeObjectClass
 class RecipeButton(Button):
 
     def ChangeRecipe(self, recipeData):
+        """ When the user clicks a recipe in the Recipe View Screen, the user should
+        expect the Recipe View to change the recipe details to match the recipe they clicked
+        """
         app = App.get_running_app()
         app.root.get_screen('recipe view').recipeName.text = recipeData.GetRecipeName()
         app.root.get_screen('recipe view').recipeInstructions.text = recipeData.GetInstructions()
@@ -19,7 +22,15 @@ class RecipeButton(Button):
             app.root.get_screen('recipe view').recipeIngredients.text += '\n{}'.format(ingredient)
 
 
+class RecipeSaveScreen(Screen):
+    pass
+
+
 class RecipeImportScreen(Screen):
+    """The Recipe Import Screen is responsible for creating a new recipe.
+    The source of this recipe can be from a URL or the user manually entering
+    the recipe details
+    """
 
     urlInput = ObjectProperty()
     recipeName = ObjectProperty()
@@ -29,10 +40,16 @@ class RecipeImportScreen(Screen):
 
     def ImportRecipe(self):
 
+        """Creates a new recipe object from a URL and shows the data in the Recipe Import Screen
+        """
+
         url = 'https://www.runnersworld.com/recipes/irish-pork-stew-with-irish-stout-and-caraway-seeds'
 
         self.recipeObj.GetRecipeFromUrl(self.urlInput.text)
-        #self.recipeObj.GetRecipeFromUrl(url)
+
+        # Check to see if the new recipe contains valid data.
+        # If the URL was invalid or could not connect then don't import the recipe.
+        # If the recipe is valid, display the data to the screen.
         if self.recipeObj.validData:
             self.recipeName.text = self.recipeObj.GetRecipeName()
             self.recipeInstructions.text = self.recipeObj.GetInstructions()
@@ -44,6 +61,9 @@ class RecipeImportScreen(Screen):
                 self.recipeName.font_size = "25dp"
 
     def CancelRecipeImport(self):
+
+        """ Cancel importing a new recipe. Clear all of the fields before returning
+        to the Recipe View Screen"""
         self.urlInput.text = ''
         self.recipeName.text = ''
         self.recipeInstructions.text = ''
@@ -53,10 +73,15 @@ class RecipeImportScreen(Screen):
 
     def ConfirmRecipeImport(self):
 
+        """Add the imported recipe object to the recipe list and return to the Recipe View Screen"""
+
         # Update the ListView to include the new recipe
         newRecipeObj = RecipeObjectClass(self.recipeObj)
-        self.manager.get_screen('recipe view').recipeList.data.append({"color": (1, 1, 1, 1), "font_size": "10sp", "text": newRecipeObj.GetRecipeName(), "input_data": newRecipeObj})
-        print(self.manager.get_screen('recipe view').recipeList.data)
+        buttonText = newRecipeObj.GetRecipeName()
+        if len(buttonText) > 20:
+            buttonText = '{}\n{}'.format(buttonText[0:20].strip(), buttonText[20:len(buttonText)].strip())
+        self.manager.get_screen('recipe view').recipeList.data.append({"color": (1, 1, 1, 1), "font_size": "10sp", "text": buttonText, "input_data": newRecipeObj})
+
         # Update the current view with the new recipe
         self.manager.get_screen('recipe view').recipeName.text = self.recipeObj.GetRecipeName()
         self.manager.get_screen('recipe view').recipeDict[self.recipeObj.GetRecipeName()] = self.recipeObj
@@ -67,6 +92,10 @@ class RecipeImportScreen(Screen):
 
 
 class RecipeViewScreen(Screen):
+
+    """The Recipe View Screen is the primary screen of the app.
+    This is where the user is brought to when the app is first loaded.
+    """
     recipeList = ObjectProperty()
     recipeName = ObjectProperty()
     recipeInstructapions = ObjectProperty()
@@ -75,9 +104,10 @@ class RecipeViewScreen(Screen):
 
     def ChangeRecipe(self, newRecipe):
 
-        print(newRecipe)
+        """Changes the currently viewed recipe to the one the user clicked
+        """
+
         recipeObj = self.recipeDict[newRecipe]
-        print(recipeObj.data)
         if recipeObj.validData:
             self.recipeName.text = recipeObj.GetRecipeName()
             self.recipeInstructions.text = recipeObj.GetInstructions()
@@ -91,8 +121,8 @@ class RecipeViewScreen(Screen):
 
     def ChangeRecipeName(self):
 
-        print(self.recipeDict.keys())
-        pass
+        self.manager.transition.direction = 'left'
+        self.manager.current = 'recipe save'
 
 
 class CookbookGuiApp(App):
@@ -101,4 +131,5 @@ class CookbookGuiApp(App):
         cookbooxScreenManager = ScreenManager()
         cookbooxScreenManager.add_widget(RecipeViewScreen())
         cookbooxScreenManager.add_widget(RecipeImportScreen())
+        cookbooxScreenManager.add_widget(RecipeSaveScreen())
         return cookbooxScreenManager

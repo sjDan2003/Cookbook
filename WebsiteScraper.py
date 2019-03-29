@@ -16,17 +16,28 @@ class RecipeObjectClass:
 
     def GetRecipeFromUrl(self, url):
 
-        with urllib.request.urlopen(url) as response:
-
-            if response.status == 200:
+        req = urllib.request.Request(url)
+        retry = True
+        while retry is True:
+            try:
+                response = urllib.request.urlopen(req)
+            except urllib.error.HTTPError as e:
+                print(e.code)
+                #print(e.read())
+                if e.code == 403:
+                    req = urllib.request.Request(url, headers={'User-Agent': 'Magic Browser'})
+                else:
+                    retry = False
+            else:
                 source = response.read()
                 soup = bs.BeautifulSoup(source, 'lxml')
 
                 self.data = json.loads(soup.find('script', type='application/ld+json').text)
                 self.validData = True
                 print(response.status)
-            else:
-                self.validData = False
+
+                response.close()
+                retry = False
 
     def GetRecipeName(self):
 
@@ -45,8 +56,16 @@ class RecipeObjectClass:
 
         if 'recipeInstructions' in self.data:
 
-            return self.data['recipeInstructions']
+            # Some recipies have their instructions in a list.
+            # If this is true, concatinate the text into a single string, and return the single string
+            # Else the instructions are already a single string, so simply return it.
+            if type(self.data['recipeInstructions']) == list:
+                instructions = ''
+                for item in self.data['recipeInstructions']:
+                    instructions += '{} \n'.format(item['text'])
+                return instructions
+            else:
+                return self.data['recipeInstructions']
 
         else:
-
             return ''
