@@ -15,12 +15,14 @@
 
         Button:
             text: 'Save to Local Storage'
+            on_press: root.SaveToLocalStorage()
         Button:
             text: 'Save to Google Drive'
         Button:
             text: 'Save to Dropbox'
         Button:
             text: 'Load from Local Storage'
+            on_press: root.LoadFromLocalStorage()
         Button:
             text: 'Load from Google Drive'
         Button:
@@ -127,8 +129,8 @@
                 Button:
                     id: changeButtonId
                     size_hint_y: .10
-                    text: "Change Recipe Name"
-                    on_press: root.ChangeRecipeName()
+                    text: "Save/Load Recipes"
+                    on_press: root.SaveRecipes()
                 Button:
                     text: 'Go To Recipe Import'
                     size_hint_y: .10

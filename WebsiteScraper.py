@@ -46,11 +46,19 @@ class RecipeObjectClass:
         elif 'headline' in self.data:
             return self.data['headline']
         else:
+            print('Could not find name')
             return ''
 
     def GetIngredients(self):
 
-        return self.data['recipeIngredient']
+        if 'recipeIngredient' in self.data:
+
+            return self.data['recipeIngredient']
+
+        else:
+            print('Could not find recipeIngredient')
+            print(self.data)
+            return ''
 
     def GetInstructions(self):
 
@@ -62,10 +70,19 @@ class RecipeObjectClass:
             if type(self.data['recipeInstructions']) == list:
                 instructions = ''
                 for item in self.data['recipeInstructions']:
-                    instructions += '{} \n'.format(item['text'])
+                    try:
+                        instructions += '{} \n'.format(item['text'])
+                    except TypeError as e:
+                        #print(item)
+                        #print(self.data['recipeInstructions'])
+                        instructions += '{} \n'.format(item)
                 return instructions
             else:
                 return self.data['recipeInstructions']
 
         else:
             return ''
+
+    def GetData(self):
+
+        return self.data

@@ -1,3 +1,6 @@
+import os
+import json
+
 from kivy.app import App
 from kivy.uix.button import Button
 from kivy.properties import ObjectProperty
@@ -23,7 +26,36 @@ class RecipeButton(Button):
 
 
 class RecipeSaveScreen(Screen):
-    pass
+
+    localBaseDir = os.path.split(os.path.abspath(__file__))[0]
+    localRecipeJson = os.path.join(localBaseDir, 'data/savedRecipes.json')
+
+    def CreateSaveableList(self, recipeListData):
+
+        saveableList = []
+        for recipe in recipeListData:
+            print(recipe)
+            saveableList.append(recipe['input_data'].GetData())
+        return saveableList
+
+    def SaveToLocalStorage(self):
+
+        saveableList = self.CreateSaveableList(self.manager.get_screen('recipe view').recipeList.data)
+        print(saveableList)
+        os.makedirs(os.path.dirname(self.localRecipeJson), exist_ok=True)
+        print(self.localRecipeJson)
+        with open(self.localRecipeJson, 'w+') as fp:
+            json.dump(saveableList, fp)
+
+        self.manager.transition.direction = 'right'
+        self.manager.current = 'recipe view'
+
+    def LoadFromLocalStorage(self):
+
+        with open(self.localRecipeJson) as fp:
+            loadedRecipeData = json.load(fp)
+        for recpie in loadedRecipeData:
+            print('{}\n'.format(recpie))
 
 
 class RecipeImportScreen(Screen):
@@ -119,7 +151,7 @@ class RecipeViewScreen(Screen):
                 self.recipeName.font_size = "25dp"
         pass
 
-    def ChangeRecipeName(self):
+    def SaveRecipes(self):
 
         self.manager.transition.direction = 'left'
         self.manager.current = 'recipe save'
