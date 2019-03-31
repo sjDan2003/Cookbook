@@ -8,7 +8,7 @@ class RecipeObjectClass:
     def __init__(self, recipeObj=None):
 
         if recipeObj is None:
-            self.data = ''
+            self.data = {}
             self.validData = False
         else:
             self.data = recipeObj.data
@@ -31,13 +31,30 @@ class RecipeObjectClass:
             else:
                 source = response.read()
                 soup = bs.BeautifulSoup(source, 'lxml')
-
-                self.data = json.loads(soup.find('script', type='application/ld+json').text)
-                self.validData = True
+                recipeData = soup.find('script', type='application/ld+json')
+                if recipeData is not None:
+                    self.data = json.loads(recipeData.text)
+                    self.validData = True
+                else:
+                    self.data = {}
+                    self.validData = False
+                    print('Could not find recipe data for {}'.format(url))
+                    if type(source) is bytes:
+                        # TODO: Need to find a way to properly decode these sites.
+                        # Beautiful Soup will correctly not find the type, but print
+                        # the reason why
+                        print('Source is byte string')
                 print(response.status)
 
                 response.close()
                 retry = False
+
+    def GetRecipeFromDict(self, recipeDict):
+        """If the recipe is already in dictionary format, then simply copy its data
+        to this object and set this object's value to true"""
+        self.data = recipeDict
+        self.validData = True
+
 
     def GetRecipeName(self):
 

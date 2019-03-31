@@ -54,8 +54,18 @@ class RecipeSaveScreen(Screen):
 
         with open(self.localRecipeJson) as fp:
             loadedRecipeData = json.load(fp)
+
         for recpie in loadedRecipeData:
             print('{}\n'.format(recpie))
+            recipObj = RecipeObjectClass()
+            recipObj.GetRecipeFromDict(recpie)
+            buttonText = recipObj.GetRecipeName()
+            if len(buttonText) > 20:
+                buttonText = '{}\n{}'.format(buttonText[0:20].strip(), buttonText[20:len(buttonText)].strip())
+            self.manager.get_screen('recipe view').recipeList.data.append({"color": (1, 1, 1, 1), "font_size": "10sp", "text": buttonText, "input_data": recipObj})
+
+        self.manager.transition.direction = 'right'
+        self.manager.current = 'recipe view'
 
 
 class RecipeImportScreen(Screen):
@@ -116,7 +126,6 @@ class RecipeImportScreen(Screen):
 
         # Update the current view with the new recipe
         self.manager.get_screen('recipe view').recipeName.text = self.recipeObj.GetRecipeName()
-        self.manager.get_screen('recipe view').recipeDict[self.recipeObj.GetRecipeName()] = self.recipeObj
 
         # Transition back to the recipe view screen
         self.manager.transition.direction = 'right'
@@ -132,24 +141,6 @@ class RecipeViewScreen(Screen):
     recipeName = ObjectProperty()
     recipeInstructapions = ObjectProperty()
     recipeIngredients = ObjectProperty()
-    recipeDict = {}
-
-    def ChangeRecipe(self, newRecipe):
-
-        """Changes the currently viewed recipe to the one the user clicked
-        """
-
-        recipeObj = self.recipeDict[newRecipe]
-        if recipeObj.validData:
-            self.recipeName.text = recipeObj.GetRecipeName()
-            self.recipeInstructions.text = recipeObj.GetInstructions()
-            self.recipeIngredients.text = ''
-            for ingredient in recipeObj.GetIngredients():
-                self.recipeIngredients.text += '\n{}'.format(ingredient)
-
-            if len(self.recipeName.text) > 20:
-                self.recipeName.font_size = "25dp"
-        pass
 
     def SaveRecipes(self):
 
