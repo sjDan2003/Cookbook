@@ -5,6 +5,22 @@
 <RecipeButton>:
     on_press: root.ChangeRecipe(self.input_data)
 
+<ErrorPopUp>:
+    id:errorPopUp
+    errorInfoLabel: errorInfoLabelId
+    size_hint: .4, .4
+    auto_dismiss: False
+    title: 'Error'
+    BoxLayout:
+        orientation: 'vertical'
+        Label:
+            id: errorInfoLabelId
+            text: 'Default'
+        Button:
+            text: 'OK'
+            size_hint_y: .2
+            on_press: errorPopUp.dismiss()
+
 <RecipeSaveScreen>:
     name: 'recipe save'
     GridLayout:

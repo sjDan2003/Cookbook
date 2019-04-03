@@ -69,13 +69,10 @@ class RecipeObjectClass:
     def GetIngredients(self):
 
         if 'recipeIngredient' in self.data:
-
             return self.data['recipeIngredient']
-
         else:
-            print('Could not find recipeIngredient')
-            print(self.data)
             return ''
+
 
     def GetInstructions(self):
 
@@ -87,18 +84,37 @@ class RecipeObjectClass:
             if type(self.data['recipeInstructions']) == list:
                 instructions = ''
                 for item in self.data['recipeInstructions']:
-                    try:
-                        instructions += '{} \n'.format(item['text'])
-                    except TypeError as e:
-                        #print(item)
-                        #print(self.data['recipeInstructions'])
-                        instructions += '{} \n'.format(item)
+
+                    # Some websites use a itemListElement for their ingredients.
+                    if 'itemListElement' in item:
+                        itemList = item['itemListElement']
+                        for item in itemList:
+                            instructions += '{} \n'.format(item['text'].strip())
+                    else:
+                        try:
+                            instructions += '{} \n'.format(item['text'].strip())
+                        except TypeError:
+                            instructions += '{} \n'.format(item.strip())
                 return instructions
             else:
                 return self.data['recipeInstructions']
 
         else:
             return ''
+
+
+    def GetRecipeErrors(self):
+
+        errorStr = ''
+
+        if self.GetRecipeName() == '':
+            errorStr += 'Problem finding Recipe Name\n'
+        if self.GetIngredients() == '':
+            errorStr += 'Problem finding Recipe Ingredients\n'
+        if self.GetInstructions() == '':
+            errorStr += 'Problem finding Recipe Instructions\n'
+
+        return errorStr
 
     def GetData(self):
 

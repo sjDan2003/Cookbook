@@ -6,8 +6,18 @@ from kivy.uix.button import Button
 from kivy.properties import ObjectProperty
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.screenmanager import ScreenManager, Screen
+from kivy.uix.popup import Popup
+from kivy.properties import ObjectProperty
 
 from WebsiteScraper import RecipeObjectClass
+
+class ErrorPopUp(Popup):
+
+    errorInfoLabel = ObjectProperty()
+
+    def __init__(self, errorText, **kwargs):
+        super(ErrorPopUp, self).__init__(**kwargs)
+        self.errorInfoLabel.text = errorText
 
 
 class RecipeButton(Button):
@@ -101,6 +111,12 @@ class RecipeImportScreen(Screen):
 
             if len(self.recipeName.text) > 20:
                 self.recipeName.font_size = "25dp"
+
+        # If there were any errors getting the recipe data, alert the user to what
+        # aspects of the recipe are missing.
+        recipeErrors = self.recipeObj.GetRecipeErrors()
+        if recipeErrors != '':
+            ErrorPopUp(recipeErrors).open()
 
     def CancelRecipeImport(self):
 
