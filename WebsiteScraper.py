@@ -8,7 +8,8 @@ class JsonScrapper():
 
     def ExtractRecipeData(self, soup):
         recipeDataJson = soup.find('script', type='application/ld+json')
-        recipeData = json.loads(recipeDataJson)
+        print(recipeDataJson.string)
+        recipeData = json.loads(recipeDataJson.string)
         return recipeData
 
 
