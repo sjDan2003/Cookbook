@@ -3,13 +3,55 @@ import urllib.request
 import json
 
 
+class JsonScrapper():
+
+
+    def ExtractRecipeData(self, soup):
+        recipeDataJson = soup.find('script', type='application/ld+json')
+        recipeData = json.loads(recipeDataJson)
+        return recipeData
+
+
+class AllRecipesScrapper():
+
+
+    def ExtractIngredients(self, soup):
+        ingredients = []
+        for ingredient in soup.find_all('span', itemprop="recipeIngredient"):
+            print(ingredient.string)
+            ingredients.append(ingredient.string)
+        return ingredients
+
+
+    def ExtractInstructions(self, soup):
+
+        instructions = ''
+        for instuction in soup.find_all('span', class_="recipe-directions__list--item"):
+            print(instuction.string)
+            instructions += '{}\n'.format(instuction.string)
+        return instructions
+
+
+    def ExtractRecipeName(self, soup):
+
+        return soup.find('h1', id="recipe-main-content").string
+
+
+    def ExtractRecipeData(self, soup):
+        recipeData = {}
+        recipeData['name'] = self.ExtractRecipeName(soup)
+        recipeData['recipeIngredient'] = self.ExtractIngredients(soup)
+        recipeData['recipeInstructions'] = self.ExtractInstructions(soup)
+        return recipeData
+
+
 class RecipeObjectClass:
 
     def __init__(self, recipeObj=None):
 
         if recipeObj is None:
             self.data = {}
-            self.validData = False
+            self.validDatSa = False
         else:
             self.data = recipeObj.data
             self.validData = recipeObj.validData
@@ -31,9 +73,12 @@ class RecipeObjectClass:
             else:
                 source = response.read()
                 soup = bs.BeautifulSoup(source, 'lxml')
-                recipeData = soup.find('script', type='application/ld+json')
+                if 'allrecipes' in url:
+                    recipeData = AllRecipesScrapper().ExtractRecipeData(soup)
+                else:
+                    recipeData = JsonScrapper().ExtractRecipeData(soup)
                 if recipeData is not None:
-                    self.data = json.loads(recipeData.text)
+                    self.data = recipeData
                     self.validData = True
                 else:
                     self.data = {}
