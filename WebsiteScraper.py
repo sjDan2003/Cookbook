@@ -46,6 +46,61 @@ class AllRecipesScrapper():
         return recipeData
 
 
+class EpicuriousScrapper():
+
+    def ExtractRecipeName(self, soup):
+        """One of the places where the recipe name is stored on epicurious is
+        in a variable called digital data. This variable stores a dictionary objectn
+        containing not only the recipe name, but other information that could be
+        useful in the future.
+        """
+        recipeName = ''
+        for item in soup.find_all('script', type='text/javascript'):
+            searchStr = 'var digitalData = '
+            if searchStr in item.string:
+
+                # Removing leading and trailing whitespace around the item
+                itemString = item.string.strip()
+
+                # Strip the variable name out of the string
+                digitalDataVar = itemString[len(searchStr) : len(itemString) - 1]
+
+                #Convert the string to a dict
+                jsonDigitalData = json.loads(digitalDataVar)
+                recipeName = jsonDigitalData['display']
+                break
+
+        return recipeName
+
+
+    def ExtractIngredients(self, soup):
+
+        ingredients = []
+
+        for ingredient in soup.find_all('li', class_='ingredient'):
+            ingredients.append(ingredient.string)
+
+        return ingredients
+
+
+    def ExtractInstructions(self, soup):
+
+        instructions = ''
+
+        for instruction in soup.find_all('li', class_='preparation-step'):
+            instructions += '{}\n'.format(instruction.string.strip())
+
+        return instructions
+
+
+    def ExtractRecipeData(self, soup):
+        recipeData = {}
+        recipeData['name'] = self.ExtractRecipeName(soup)
+        recipeData['recipeIngredient'] = self.ExtractIngredients(soup)
+        recipeData['recipeInstructions'] = self.ExtractInstructions(soup)
+        return recipeData
+
+
 class RecipeObjectClass:
 
     def __init__(self, recipeObj=None):
@@ -56,6 +111,20 @@ class RecipeObjectClass:
         else:
             self.data = recipeObj.data
             self.validData = recipeObj.validData
+
+
+    def GetScrapper(self, url):
+
+        """Different food sites use different methods to format the recipe data
+        This function identifies the best scrapper to scrape the recipe data
+        and returns it to the calling fucntion"""
+
+        if 'allrecipes' in url:
+            return AllRecipesScrapper
+        elif 'epicurious' in url:
+            return EpicuriousScrapper
+        else:
+            return JsonScrapper
 
     def GetRecipeFromUrl(self, url):
 
@@ -74,10 +143,8 @@ class RecipeObjectClass:
             else:
                 source = response.read()
                 soup = bs.BeautifulSoup(source, 'lxml')
-                if 'allrecipes' in url:
-                    recipeData = AllRecipesScrapper().ExtractRecipeData(soup)
-                else:
-                    recipeData = JsonScrapper().ExtractRecipeData(soup)
+                scrapper = self.GetScrapper(url)
+                recipeData = scrapper().ExtractRecipeData(soup)
                 if recipeData is not None:
                     self.data = recipeData
                     self.validData = True

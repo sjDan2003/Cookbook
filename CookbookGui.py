@@ -95,8 +95,6 @@ class RecipeImportScreen(Screen):
         """Creates a new recipe object from a URL and shows the data in the Recipe Import Screen
         """
 
-        url = 'https://www.runnersworld.com/recipes/irish-pork-stew-with-irish-stout-and-caraway-seeds'
-
         self.recipeObj.GetRecipeFromUrl(self.urlInput.text)
 
         # Check to see if the new recipe contains valid data.
