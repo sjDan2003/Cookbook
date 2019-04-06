@@ -30,6 +30,15 @@ This code relies on the following Python Libraries.
 
    Visit the following website for instructions to install Beautiful Soup: 
    https://www.crummy.com/software/BeautifulSoup/bs4/doc/#installing-beautiful-soup
+   
+## Testing
+
+Unit tests have been written in the test folder. These tests have been written using Test Driven Development (TDD) methodolody to speed up the development and ensure that changes to the app can be quickly tested.
+
+To run these tests, execute the following command:
+```shell
+$ python3 -m unittest tests/test_EpicuriousScrapper.py
+```
 
 ## Tested Websites
 
@@ -39,8 +48,9 @@ The following food websites have been used to test this app:
 * allrecipes.com
 * food.com
 * yummly.com
+* epicurious.com
 
 Support for the following sites is on the way:
 
-* epicurious.com
+
 * www.thekitchn.com
