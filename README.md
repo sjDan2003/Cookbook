@@ -37,7 +37,7 @@ Unit tests have been written in the test folder. These tests have been written u
 
 To run these tests, execute the following command:
 ```shell
-$ python3 -m unittest tests/test_EpicuriousScrapper.py
+$ python3 tests/test_AllTests.py
 ```
 
 ## Tested Websites
