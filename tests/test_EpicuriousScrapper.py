@@ -41,6 +41,3 @@ class EpicuriousScrapperTestClass(unittest.TestCase):
 
         testInstructions = EpicuriousScrapper().ExtractInstructions(self.soup)
         self.assertTrue(isinstance(testInstructions, str), 'Recipe Instructions should be a string')
-
-if __name__ == '__main__':
-    unittest.main()
