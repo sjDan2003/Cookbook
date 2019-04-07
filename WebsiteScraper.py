@@ -13,6 +13,20 @@ class JsonScrapper():
         return recipeData
 
 
+class CookingLightScrapper():
+
+    def ExtractRecipeData(self, soup):
+        """CookingLight uses the JSON format, but there are multiple JSONs in
+        each HTML. Pull the right one and let JsonScrapper do the rest."""
+        recipeDataJson = soup.find('script', type='application/ld+json')
+        rawString = recipeDataJson.string.strip()[1:-1]
+        startIndex = rawString.find('},{"@context') + 2
+        recipeData = json.loads(rawString[startIndex:])
+
+        return recipeData
+
+
+
 class AllRecipesScrapper():
 
 
@@ -123,6 +137,8 @@ class RecipeObjectClass:
             return AllRecipesScrapper
         elif 'epicurious' in url:
             return EpicuriousScrapper
+        elif 'cookinglight' in url:
+            return CookingLightScrapper
         else:
             return JsonScrapper
 
