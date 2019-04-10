@@ -15,16 +15,16 @@ class JsonScrapper():
 
 class CookingLightScrapper():
 
+
     def ExtractRecipeData(self, soup):
         """CookingLight uses the JSON format, but there are multiple JSONs in
-        each HTML. Pull the right one and let JsonScrapper do the rest."""
+        each HTML. Pull the second one and use the JSON library to load it."""
         recipeDataJson = soup.find('script', type='application/ld+json')
         rawString = recipeDataJson.string.strip()[1:-1]
         startIndex = rawString.find('},{"@context') + 2
         recipeData = json.loads(rawString[startIndex:])
 
         return recipeData
-
 
 
 class AllRecipesScrapper():
@@ -115,6 +115,45 @@ class EpicuriousScrapper():
         return recipeData
 
 
+class TheKitchnScrapper():
+
+    def ExtractRecipeName(self, soup):
+
+        return soup.find('h2', class_='Recipe__title').string
+
+    def ExtractIngredients(self, soup):
+
+        ingredients = []
+        ingredient  = ''
+
+        # Find all of the ingredients and add them to the ingredient list
+        # Ingredient quantiy and text are seperated by span tags, so this function will have to
+        # combine all of the text between span tags.
+        for ingredientClass in soup.find_all('li', class_='Recipe__ingredient'):
+            for ingredientItem in ingredientClass.find_all('span'):
+                ingredient += ingredientItem.get_text()
+            ingredients.append(ingredient.strip())
+            ingredient = ''
+
+        return ingredients
+
+    def ExtractInstructions(self, soup):
+        instructions = ''
+
+        for instruction in soup.find_all('li', class_='Recipe__instruction-step'):
+            instructions += '{}\n'.format(instruction.string)
+
+        return instructions
+
+
+    def ExtractRecipeData(self, soup):
+        recipeData = {}
+        recipeSoup = soup.find('div', class_='Recipe')
+        recipeData['name'] = self.ExtractRecipeName(recipeSoup)
+        recipeData['recipeIngredient'] = self.ExtractIngredients(recipeSoup)
+        recipeData['recipeInstructions'] = self.ExtractInstructions(recipeSoup)
+        return recipeData
+
 class RecipeObjectClass:
 
     def __init__(self, recipeObj=None):
@@ -137,8 +176,10 @@ class RecipeObjectClass:
             return AllRecipesScrapper
         elif 'epicurious' in url:
             return EpicuriousScrapper
-        elif 'cookinglight' in url:
+        elif 'cookinglight' in url or 'myrecipes' in url:
             return CookingLightScrapper
+        elif 'thekitchn' in url:
+            return TheKitchnScrapper
         else:
             return JsonScrapper
 

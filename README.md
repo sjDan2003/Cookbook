@@ -10,27 +10,27 @@ This code relies on the following Python Libraries.
 
 * Kivy
 
-  Kivy has at least one dependency. 
+  Kivy has at least one dependency.
   First you shoud install Cython:
   ```shell
   $ pip install Cython
   ```
-  
+
   Depending on your system, you may also need pygame:
   ```shell
   $ pip install pygame
   ```
-  
+
   Finally, you can install Kivy:
   ```shell
   $ pip install kivy
   ```
-  
+
 * Beautiful Soup
 
-   Visit the following website for instructions to install Beautiful Soup: 
+   Visit the following website for instructions to install Beautiful Soup:
    https://www.crummy.com/software/BeautifulSoup/bs4/doc/#installing-beautiful-soup
-   
+
 ## Testing
 
 Unit tests have been written in the test folder. These tests have been written using Test Driven Development (TDD) methodolody to speed up the development and ensure that changes to the app can be quickly tested.
@@ -44,13 +44,24 @@ $ python3 tests/test_AllTests.py
 
 The following food websites have been used to test this app:
 
-* foodnetwork.com
-* allrecipes.com
-* food.com
-* yummly.com
-* epicurious.com
+* www.foodnetwork.com
+* www.allrecipes.com
+* www.food.com
+* www.yummly.com
+* www.epicurious.com
+* www.cookinglight.com
+* www.simplyrecipes.com
+* www.chowhound.com
+* www.thekitchn.com
+* www.simplyrecipes.com
+* www.myfoodandfamily.com
+* www.myrecipes.com
 
 Support for the following sites is on the way:
 
+* www.bettycrocker.com
+* www.eatingwell.com
+* www.cooks.com
 
-* www.thekitchn.com
+
+
