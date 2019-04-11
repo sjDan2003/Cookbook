@@ -56,12 +56,6 @@ The following food websites have been used to test this app:
 * www.simplyrecipes.com
 * www.myfoodandfamily.com
 * www.myrecipes.com
-
-Support for the following sites is on the way:
-
 * www.bettycrocker.com
 * www.eatingwell.com
 * www.cooks.com
-
-
-
