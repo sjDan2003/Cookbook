@@ -7,8 +7,6 @@ from google.auth.transport.requests import Request
 
 # If modifying these scopes, delete the file token.pickle.
 SCOPES = ['https://www.googleapis.com/auth/drive.metadata.readonly']
-clientId = '757447661942-ts9vuf6hv0uh6f4reftjelrp4vjuilm2.apps.googleusercontent.com'
-clientSecret = 'nGMYPsOUPvrLQ0b6ryu5OTxM'
 
 def GetCredentials():
 
