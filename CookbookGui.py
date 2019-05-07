@@ -10,6 +10,7 @@ from kivy.uix.popup import Popup
 from kivy.properties import ObjectProperty
 
 from WebsiteScraper import RecipeObjectClass
+from GoogleDrive import GoogleDriveClass
 
 class ErrorPopUp(Popup):
 
@@ -37,10 +38,28 @@ class RecipeButton(Button):
 
 class RecipeSaveScreen(Screen):
 
+    """This Recipe Save Screen manages saving and loading parsed recipe
+    data from either local files or files in the cloud
+
+    The recipe data is stored in a JSON format"""
+
     localBaseDir = os.path.split(os.path.abspath(__file__))[0]
     localRecipeJson = os.path.join(localBaseDir, 'data/savedRecipes.json')
 
+    def LoadRecipeDataToRecycleView(self, recipeData):
+
+        for recpie in recipeData:
+            recipObj = RecipeObjectClass()
+            recipObj.GetRecipeFromDict(recpie)
+            buttonText = recipObj.GetRecipeName()
+            if len(buttonText) > 20:
+                buttonText = '{}\n{}'.format(buttonText[0:20].strip(), buttonText[20:len(buttonText)].strip())
+            self.manager.get_screen('recipe view').recipeList.data.append({"color": (1, 1, 1, 1), "font_size": "10sp", "text": buttonText, "input_data": recipObj})
+
+
     def CreateSaveableList(self, recipeListData):
+        """Takes the recipe dictionary data in the recycle view, and copies
+        it to a list that can be saved to a file"""
 
         saveableList = []
         for recipe in recipeListData:
@@ -49,11 +68,11 @@ class RecipeSaveScreen(Screen):
         return saveableList
 
     def SaveToLocalStorage(self):
+        """Saves the recipe data to local storage"""
 
         saveableList = self.CreateSaveableList(self.manager.get_screen('recipe view').recipeList.data)
-        print(saveableList)
         os.makedirs(os.path.dirname(self.localRecipeJson), exist_ok=True)
-        print(self.localRecipeJson)
+
         with open(self.localRecipeJson, 'w+') as fp:
             json.dump(saveableList, fp)
 
@@ -61,22 +80,59 @@ class RecipeSaveScreen(Screen):
         self.manager.current = 'recipe view'
 
     def LoadFromLocalStorage(self):
+        """Loads the recipe data from local storage
+        and builds the recycle view list"""
 
         with open(self.localRecipeJson) as fp:
             loadedRecipeData = json.load(fp)
 
-        for recpie in loadedRecipeData:
-            print('{}\n'.format(recpie))
-            recipObj = RecipeObjectClass()
-            recipObj.GetRecipeFromDict(recpie)
-            buttonText = recipObj.GetRecipeName()
-            if len(buttonText) > 20:
-                buttonText = '{}\n{}'.format(buttonText[0:20].strip(), buttonText[20:len(buttonText)].strip())
-            self.manager.get_screen('recipe view').recipeList.data.append({"color": (1, 1, 1, 1), "font_size": "10sp", "text": buttonText, "input_data": recipObj})
-
+        self.LoadRecipeDataToRecycleView(loadedRecipeData)
         self.manager.transition.direction = 'right'
         self.manager.current = 'recipe view'
 
+
+    def SaveToGoogleDrive(self):
+
+        cloudService = GoogleDriveClass()
+
+        print(self.localRecipeJson)
+
+        filename = cloudService.GetFileName(self.localRecipeJson)
+        print(filename)
+
+        if cloudService.DoesFileExist(filename):
+
+            print('Updating file')
+            fileId = cloudService.GetFileIdFromFilename(filename)
+            cloudService.UpdateFile(fileId, self.localRecipeJson)
+
+        else:
+
+            print('Uploading new file')
+            cloudService.UploadFile(self.localRecipeJson)
+
+        cloudService.PrintFileList()
+
+    def LoadFromGoogleDrive(self):
+        """Loads recipe data using Google Drive as the source"""
+
+        cloudService = GoogleDriveClass()
+        filename = cloudService.GetFileName(self.localRecipeJson)
+
+        if cloudService.DoesFileExist(filename):
+
+            fileId = cloudService.GetFileIdFromFilename(filename)
+            recipeData = cloudService.DownloadFile(fileId)
+            loadedRecipeData = json.loads(recipeData)
+
+            self.LoadRecipeDataToRecycleView(loadedRecipeData)
+
+        else:
+
+            print("File not found, no data to download")
+
+        self.manager.transition.direction = 'right'
+        self.manager.current = 'recipe view'
 
 class RecipeImportScreen(Screen):
     """The Recipe Import Screen is responsible for creating a new recipe.
