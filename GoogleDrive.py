@@ -69,9 +69,7 @@ class GoogleDriveClass():
 
     def DownloadFile(self, file_id):
         """Downloads a plain text file from the user's Google Drive account.
-
-        Precondition:
-            The file ID is valid and exists
+        This function assumes that the file_id is valid and exists
 
         Args:
             file_id: The Google Drive file ID to download
@@ -92,6 +90,17 @@ class GoogleDriveClass():
         return stringData
 
     def GetCredentials(self):
+        """Obtains the user's credentials or generates new ones
+        in order to get permission to upload or download files.
+
+        This function will open up a web browser so the user can
+        grant this program permission to access their Google Drive
+        data. In this case, this program will store the credentials
+        locally so the user doesn't have to repeat this process again.
+
+        Returns:
+            The credentials to allow this API to upload or download files.
+        """
 
         creds = None
         tokenFilename = 'data/token.pickle'
@@ -119,6 +128,12 @@ class GoogleDriveClass():
 
 
     def GetFileList(self):
+        """Calls the Google API to get the list of files in the user's
+        Google Drive folder that obey's the SCOPES permissions
+
+        Returns:
+            A list of the files in the user's drive folder
+        """
 
         results = self.drive_service.files().list(
             pageSize=10, fields="nextPageToken, files(id, name)").execute()
@@ -126,6 +141,16 @@ class GoogleDriveClass():
 
 
     def GetFileIdFromFilename(self, filename):
+        """Gets the file ID that is connected with the filename
+
+        Args:
+            filename: The name with extension to get the file ID of
+
+        Returns:
+            If the filename exists, the corresponding file ID is returned
+            Else this function returns None
+        """
+
 
         fileList = self.GetFileList()
         for fileItem in fileList:
@@ -135,6 +160,18 @@ class GoogleDriveClass():
 
 
     def GetFileName(self, filePath):
+        """Gets the file name of the file being uploaded
+        or downloaded
+
+        Args:
+            filePath: The full file path to get the file name for
+
+        Returns:
+            If the file path contains a valid filename, then
+            the file name is returned.
+            Else, if the file path is a folder or blank, then
+            None is returned.
+        """
 
         fileName = os.path.split(filePath)[1]
 
@@ -145,6 +182,16 @@ class GoogleDriveClass():
 
 
     def GetFileType(self, filePath):
+        """Gets the file type from the file being uploaded
+        or downloaded to the user's Google Drive Account
+
+        Args:
+            filePath: The file to get the file type for
+
+        Returns:
+            If the file has a file type, that file type is returned
+            Else, this function returns None
+        """
 
         fileType = os.path.splitext(filePath)[1]
 
@@ -155,6 +202,16 @@ class GoogleDriveClass():
 
 
     def GetMimeTypeFromFileName(self, filePath):
+        """Determines the MIME type to use based on the file type
+
+        Args:
+            filePath: Path to the file being uploaded or downloaded
+
+        Returns:
+            If the file type is supported, will return the MIME type
+            this API uses for the file type.
+            If the file type is not supported, will return None
+        """
 
         file_type = self.GetFileType(filePath)
 
@@ -168,6 +225,9 @@ class GoogleDriveClass():
 
 
     def PrintFileList(self):
+        """Gets a list of files from the user's Google Drive account
+        and prints them to the console
+        """
 
         items = self.GetFileList()
         if not items:
@@ -180,10 +240,8 @@ class GoogleDriveClass():
 
     def UpdateFile(self, fileId, filePath):
         """Updates an existing file in Google Drive
-
-        Precondition:
-            The calling function has verified that the file already
-            exists and the file ID points to a valid file.
+        This function assumes the calling function has verified that the file already
+        exists and the file ID points to a valid file.
 
         Args:
             fileId: The Google Drive file ID for the file to be updated
