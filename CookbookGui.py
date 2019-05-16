@@ -26,6 +26,9 @@ class RecipeButton(Button):
     def ChangeRecipe(self, recipeData):
         """ When the user clicks a recipe in the Recipe View Screen, the user should
         expect the Recipe View to change the recipe details to match the recipe they clicked
+
+        Args:
+            recipeData: Objects that stores the parsed recipe data
         """
         app = App.get_running_app()
         app.root.get_screen('recipe view').recipeName.text = recipeData.GetRecipeName()
@@ -50,7 +53,7 @@ class RecipeSaveScreen(Screen):
 
         for recpie in recipeData:
             recipObj = RecipeObjectClass()
-            recipObj.GetRecipeFromDict(recpie)
+            recipObj.SetRecipeFromDict(recpie)
             buttonText = recipObj.GetRecipeName()
             if len(buttonText) > 20:
                 buttonText = '{}\n{}'.format(buttonText[0:20].strip(), buttonText[20:len(buttonText)].strip())
@@ -59,7 +62,8 @@ class RecipeSaveScreen(Screen):
 
     def CreateSaveableList(self, recipeListData):
         """Takes the recipe dictionary data in the recycle view, and copies
-        it to a list that can be saved to a file"""
+        it to a list that can be saved to a file
+        """
 
         saveableList = []
         for recipe in recipeListData:
@@ -81,7 +85,8 @@ class RecipeSaveScreen(Screen):
 
     def LoadFromLocalStorage(self):
         """Loads the recipe data from local storage
-        and builds the recycle view list"""
+        and builds the recycle view list
+        """
 
         with open(self.localRecipeJson) as fp:
             loadedRecipeData = json.load(fp)

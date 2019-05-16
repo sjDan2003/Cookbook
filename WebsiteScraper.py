@@ -5,15 +5,55 @@ import json
 
 class JsonScrapper():
 
+    def ExtractIngredients(self, jsonDict):
+
+        return jsonDict['recipeIngredient']
+
+    def ExtractInstructions(self, jsonDict):
+
+        if 'recipeInstructions' in jsonDict:
+
+            # Some recipies have their instructions in a list.
+            # If this is true, concatinate the text into a single string, and return the single string
+            # Else the instructions are already a single string, so simply return it.
+            if type(jsonDict['recipeInstructions']) == list:
+                instructions = ''
+                for item in jsonDict['recipeInstructions']:
+
+                    # Some websites use a itemListElement for their ingredients.
+                    if 'itemListElement' in item:
+                        itemList = item['itemListElement']
+                        for item in itemList:
+                            instructions += '{} \n'.format(item['text'].strip())
+                    else:
+                        try:
+                            instructions += '{} \n'.format(item['text'].strip())
+                        except TypeError:
+                            instructions += '{} \n'.format(item.strip())
+                return instructions
+            else:
+                return jsonDict['recipeInstructions']
+
+        else:
+            return ''
+
+    def ExtractRecipeName(self, jsonDict):
+        if 'name' in jsonDict:
+            return jsonDict['name']
+        elif 'headline' in jsonDict:
+            return jsonDict['headline']
 
     def ExtractRecipeData(self, soup):
         recipeDataJson = soup.find('script', type='application/ld+json')
-        print(recipeDataJson.string)
-        recipeData = json.loads(recipeDataJson.string)
+        jsonDict = json.loads(recipeDataJson.string)
+        recipeData = {}
+        recipeData['name'] = self.ExtractRecipeName(jsonDict)
+        recipeData['recipeIngredient'] = self.ExtractIngredients(jsonDict)
+        recipeData['recipeInstructions'] = self.ExtractInstructions(jsonDict)
         return recipeData
 
 
-class CookingLightScrapper():
+class CookingLightScrapper(JsonScrapper):
 
 
     def ExtractRecipeData(self, soup):
@@ -22,8 +62,11 @@ class CookingLightScrapper():
         recipeDataJson = soup.find('script', type='application/ld+json')
         rawString = recipeDataJson.string.strip()[1:-1]
         startIndex = rawString.find('},{"@context') + 2
-        recipeData = json.loads(rawString[startIndex:])
-
+        jsonDict = json.loads(rawString[startIndex:])
+        recipeData = {}
+        recipeData['name'] = self.ExtractRecipeName(jsonDict)
+        recipeData['recipeIngredient'] = self.ExtractIngredients(jsonDict)
+        recipeData['recipeInstructions'] = self.ExtractInstructions(jsonDict)
         return recipeData
 
 
@@ -264,17 +307,26 @@ class RecipeObjectClass:
 
         if recipeObj is None:
             self.data = {}
-            self.validDatSa = False
+            self.validData = False
         else:
             self.data = recipeObj.data
             self.validData = recipeObj.validData
 
 
     def GetScrapper(self, url):
+        """Gets the class pointer to the specific scrapper based on the URL
+        of the food website.
 
-        """Different food sites use different methods to format the recipe data
+        Different food sites use different methods to format the recipe data
         This function identifies the best scrapper to scrape the recipe data
-        and returns it to the calling fucntion"""
+        and returns it to the calling fucntion
+
+        Args:
+            url: The full URL of the food website
+
+        Returns:
+            Class pointer for the specific scraper to parse the website
+        """
 
         if 'allrecipes' in url:
             return AllRecipesScrapper
@@ -293,60 +345,127 @@ class RecipeObjectClass:
         else:
             return JsonScrapper
 
-    def GetRecipeFromUrl(self, url):
 
-        req = urllib.request.Request(url, headers={'User-Agent': 'Magic Browser'})
-        retry = True
-        while retry is True:
-            try:
-                response = urllib.request.urlopen(req)
-            except urllib.error.HTTPError as e:
-                print(e.code)
-                #print(e.read())
-                if e.code == 403:
-                    req = urllib.request.Request(url, headers={'User-Agent': 'Magic Browser'})
-                else:
-                    retry = False
-            else:
+    def GetHtmlData(self, url):
+        """Retrieves the HTML data from a url
+        Other functions or libraries will be used to parse this data.
+
+        Args:
+            url: The website to open and read the HTML data
+
+        Returns:
+            If there is an issue opening the website this function will return a blank string
+            Otherwise the entire website's HTML data will be returned.
+        """
+
+        # Adding a custom header will prevent a 403 Forbidden response from a website
+        # Rather than using the default header and retrying on a 403, just send
+        # the custom header initially.
+        requestHeaders = {}
+        requestHeaders['User-Agent'] = 'Chrome Browser'
+        source = ''
+
+        # Create a request so headers can be added
+        req = urllib.request.Request(url, headers=requestHeaders)
+        try:
+            with urllib.request.urlopen(req) as response:
                 source = response.read()
-                soup = bs.BeautifulSoup(source, 'lxml')
-                scrapper = self.GetScrapper(url)
-                recipeData = scrapper().ExtractRecipeData(soup)
-                if recipeData is not None:
-                    self.data = recipeData
-                    self.validData = True
-                else:
-                    self.data = {}
-                    self.validData = False
-                    print('Could not find recipe data for {}'.format(url))
-                    if type(source) is bytes:
-                        # TODO: Need to find a way to properly decode these sites.
-                        # Beautiful Soup will correctly not find the type, but print
-                        # the reason why
-                        print('Source is byte string')
                 print(response.status)
+        except urllib.error.HTTPError as httpError:
+            print(httpError.code)
+            if httpError.code == 403:
+                # TODO: Website is still giving 403 Forbidden response.
+                # Header might need to be updated.
+                pass
+        except urllib.error.URLError as urlError:
+            # TODO: Investigate what URLErrors could happen
+            # and properly handle each one.
+            # For now just print the cause so the app doesn't crash
+            # on the user.
+            print(urlError.reason)
 
-                response.close()
-                retry = False
+        return source
 
-    def GetRecipeFromDict(self, recipeDict):
-        """If the recipe is already in dictionary format, then simply copy its data
-        to this object and set this object's value to true"""
+    def GetRecipeFromUrl(self, url):
+        """Determines how to scrape the recipe data using the URL, and passes
+        the URL's HTML data to the correct scrapper to extract the recipe data.
+        If there is a valid recipe data in the URL the validData flag is set to True
+        and use the data from the recipe scrapper
+        Otherwise the validData flag is set to false and the data dict is set to empty.
+
+        Args:
+            url: The website where the recipe is located.
+
+        Returns:
+            None.
+        """
+
+        rawHtmlData = self.GetHtmlData(url)
+
+        # If there was an issue getting the HTML data, treat this as invalid data
+        # and return.
+        if rawHtmlData != '':
+            soup = bs.BeautifulSoup(rawHtmlData, 'lxml')
+            scrapper = self.GetScrapper(url)
+            recipeData = scrapper().ExtractRecipeData(soup)
+            if recipeData is not None:
+                self.data = recipeData
+                self.validData = True
+            else:
+                self.data = {}
+                self.validData = False
+                print('Could not find recipe data for {}'.format(url))
+                if type(rawHtmlData) is bytes:
+                    # TODO: Need to find a way to properly decode these sites.
+                    # Beautiful Soup will correctly not find the type, but print
+                    # the reason why
+                    print('Source is byte string')
+        else:
+            self.data = {}
+            self.validData = False
+            print('Raw html data invalid')
+
+
+    def SetRecipeFromDict(self, recipeDict):
+        """This function is used to copy pre-parsed recipe data stored in a dictionary
+        format to this object.
+
+        Args:
+            recipeDict: A dictionary containing pre-parsed recipe data
+
+        Returns:
+            None
+        """
         self.data = recipeDict
         self.validData = True
 
 
     def GetRecipeName(self):
+        """Returns the recipe name to the calling function
+
+        Args:
+            None
+
+        Returns:
+            If a name wasn't stored, this function will returns a blank string
+            Otherwise the name of the recipe is returned.
+        """
 
         if 'name' in self.data:
             return self.data['name']
-        elif 'headline' in self.data:
-            return self.data['headline']
         else:
-            print('Could not find name')
             return ''
 
     def GetIngredients(self):
+        """Returns the recipe ingredients to the calling function
+
+        Args:
+            None
+
+        Returns:
+            If the ingredients weren't stored, this function will returns a blank string
+            Otherwise the ingredients of the recipe are returned.
+        """
 
         if 'recipeIngredient' in self.data:
             return self.data['recipeIngredient']
@@ -355,35 +474,33 @@ class RecipeObjectClass:
 
 
     def GetInstructions(self):
+        """Returns the recipe instructions to the calling function
+
+        Args:
+            None
+
+        Returns:
+            If the instructions weren't stored, this function will returns a blank string
+            Otherwise the instructions of the recipe are returned.
+        """
 
         if 'recipeInstructions' in self.data:
-
-            # Some recipies have their instructions in a list.
-            # If this is true, concatinate the text into a single string, and return the single string
-            # Else the instructions are already a single string, so simply return it.
-            if type(self.data['recipeInstructions']) == list:
-                instructions = ''
-                for item in self.data['recipeInstructions']:
-
-                    # Some websites use a itemListElement for their ingredients.
-                    if 'itemListElement' in item:
-                        itemList = item['itemListElement']
-                        for item in itemList:
-                            instructions += '{} \n'.format(item['text'].strip())
-                    else:
-                        try:
-                            instructions += '{} \n'.format(item['text'].strip())
-                        except TypeError:
-                            instructions += '{} \n'.format(item.strip())
-                return instructions
-            else:
-                return self.data['recipeInstructions']
-
+            return self.data['recipeInstructions']
         else:
             return ''
 
 
     def GetRecipeErrors(self):
+        """This function looks at all of the parts of the recipe and looks for issues.
+        If there are any issues the user should be notified.
+
+        Args:
+            None
+
+        Returns:
+            A string with all of the errors that were found.
+            If there are no errors, a blank string is returned
+        """
 
         errorStr = ''
 
@@ -396,6 +513,15 @@ class RecipeObjectClass:
 
         return errorStr
 
+
     def GetData(self):
+        """Returns the dictionary data of the recipie to the calling function
+
+        Args:
+            None
+
+        Returns:
+            The dictionary data.
+        """
 
         return self.data
