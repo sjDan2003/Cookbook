@@ -301,7 +301,7 @@ class CooksScrapper():
         return recipeData
 
 
-class RecipeObjectClass:
+class RecipeObjectClass():
 
     def __init__(self, recipeObj=None):
 
@@ -487,7 +487,7 @@ class RecipeObjectClass:
         if 'recipeInstructions' in self.data:
             return self.data['recipeInstructions']
         else:
-            return ''
+            return 'a'
 
 
     def GetRecipeErrors(self):
