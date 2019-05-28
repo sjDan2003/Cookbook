@@ -12,24 +12,23 @@ class GoogleDriveClass():
     # If modifying these scopes, delete the file token.pickle.
     SCOPES = ['https://www.googleapis.com/auth/drive.file']
 
-    # MIME stands for Multipurpose Internet Mail Extensions, and is also sometimes referred
-    # to as Media Type. It's a standard that indicates the nature of a file.
+    # MIME stands for Multipurpose Internet Mail Extensions, and is also
+    # sometimes referred to as Media Type.
+    # It's a standard that indicates the nature of a file.
     mimeTypes = {'HTML': 'text/html', 'zip': 'application/zip', 'plainText': 'text/plain',
-                'richText': 'application/rtf', 'openOfficeDoc': 'application/vnd.oasis.opendocument.text',
-                'pdf':	'application/pdf', 'msWord' : 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-                'epub': 'application/epub+zip', 'msExcel': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-                'openOfficeSheet': 'application/x-vnd.oasis.opendocument.spreadsheet', 'pdf': 'application/pdf', 'csv': 'text/csv',
-                'tsv': 'text/tab-separated-values', 'htmlZip': 'application/zip', 'jpeg': 'image/jpeg', 'png': 'image/png',
-                'svg': 'image/svg+xml', 'msPowerPoint': 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
-                'openOfficePresentation': 'application/vnd.oasis.opendocument.presentation',
-                'json': 'application/vnd.google-apps.script+json'}
-
+                 'richText': 'application/rtf', 'openOfficeDoc': 'application/vnd.oasis.opendocument.text',
+                 'pdf':	'application/pdf', 'msWord': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                 'epub': 'application/epub+zip', 'msExcel': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                 'openOfficeSheet': 'application/x-vnd.oasis.opendocument.spreadsheet', 'pdf': 'application/pdf', 'csv': 'text/csv',
+                 'tsv': 'text/tab-separated-values', 'htmlZip': 'application/zip', 'jpeg': 'image/jpeg', 'png': 'image/png',
+                 'svg': 'image/svg+xml', 'msPowerPoint': 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+                 'openOfficePresentation': 'application/vnd.oasis.opendocument.presentation',
+                 'json': 'application/vnd.google-apps.script+json'}
 
     def __init__(self):
 
         creds = self.GetCredentials()
         self.drive_service = build('drive', 'v3', credentials=creds)
-
 
     def DeleteFile(self, fileId):
         """Deletes a file using its Google Drive file ID
@@ -41,8 +40,7 @@ class GoogleDriveClass():
             None
         """
 
-        self.drive_service.files().delete(fileId = fileId).execute()
-
+        self.drive_service.files().delete(fileId=fileId).execute()
 
     def DoesFileExist(self, filename):
         """Checks if the file already exists in the user's Google
@@ -58,14 +56,13 @@ class GoogleDriveClass():
 
         fileId = self.GetFileIdFromFilename(filename)
 
-        if fileId == None:
+        if fileId is None:
 
             return False
 
         else:
 
             return True
-
 
     def DownloadFile(self, file_id):
         """Downloads a plain text file from the user's Google Drive account.
@@ -103,11 +100,15 @@ class GoogleDriveClass():
         """
 
         creds = None
-        tokenFilename = 'data/token.pickle'
-        credentialsFilename = 'data/credentials.json'
-        # The file token.pickle stores the user's access and refresh tokens, and is
-        # created automatically when the authorization flow completes for the first
-        # time.
+        folderPath = os.path.dirname(__file__)
+        tokenPath = 'data/token.pickle'
+        credentialsPath = 'data/credentials.json'
+        tokenFilename = os.path.join(folderPath, tokenPath)
+        credentialsFilename = os.path.join(folderPath, credentialsPath)
+
+        # The file token.pickle stores the user's access and refresh tokens
+        # and is created automatically when the authorization flow completes
+        # for the first time.
         if os.path.exists(tokenFilename):
             with open(tokenFilename, 'rb') as token:
                 creds = pickle.load(token)
@@ -126,7 +127,6 @@ class GoogleDriveClass():
 
         return creds
 
-
     def GetFileList(self):
         """Calls the Google API to get the list of files in the user's
         Google Drive folder that obey's the SCOPES permissions
@@ -139,7 +139,6 @@ class GoogleDriveClass():
             pageSize=10, fields="nextPageToken, files(id, name)").execute()
         return results.get('files', [])
 
-
     def GetFileIdFromFilename(self, filename):
         """Gets the file ID that is connected with the filename
 
@@ -151,13 +150,11 @@ class GoogleDriveClass():
             Else this function returns None
         """
 
-
         fileList = self.GetFileList()
         for fileItem in fileList:
             if fileItem['name'] == filename:
                 return fileItem['id']
         return None
-
 
     def GetFileName(self, filePath):
         """Gets the file name of the file being uploaded
@@ -180,7 +177,6 @@ class GoogleDriveClass():
         else:
             return None
 
-
     def GetFileType(self, filePath):
         """Gets the file type from the file being uploaded
         or downloaded to the user's Google Drive Account
@@ -199,7 +195,6 @@ class GoogleDriveClass():
             return fileType
         else:
             return None
-
 
     def GetMimeTypeFromFileName(self, filePath):
         """Determines the MIME type to use based on the file type
@@ -223,7 +218,6 @@ class GoogleDriveClass():
             print("Unknown file type")
             return None
 
-
     def PrintFileList(self):
         """Gets a list of files from the user's Google Drive account
         and prints them to the console
@@ -237,11 +231,10 @@ class GoogleDriveClass():
             for item in items:
                 print(u'{0} ({1})'.format(item['name'], item['id']))
 
-
     def UpdateFile(self, fileId, filePath):
         """Updates an existing file in Google Drive
-        This function assumes the calling function has verified that the file already
-        exists and the file ID points to a valid file.
+        This function assumes the calling function has verified that the file
+        already exists and the file ID points to a valid file.
 
         Args:
             fileId: The Google Drive file ID for the file to be updated
@@ -256,18 +249,18 @@ class GoogleDriveClass():
 
         media = MediaFileUpload(filePath,
                                 mimetype=mimeType)
-        file = self.drive_service.files().update(fileId = fileId,
-                                            body=file_metadata,
-                                            media_body=media,
-                                            fields='id').execute()
-
+        file = self.drive_service.files().update(fileId=fileId,
+                                                 body=file_metadata,
+                                                 media_body=media,
+                                                 fields='id').execute()
 
     def UploadFile(self, filePath):
 
         """Uploads a file to the user's Google Drive account
 
         Args:
-            filePath: The file path on the user's local storage where the file is stored
+            filePath: The file path on the user's local storage where
+                      the file is stored
 
         Returns:
             None
@@ -279,8 +272,8 @@ class GoogleDriveClass():
         media = MediaFileUpload(filePath,
                                 mimetype=mimeType)
         file = self.drive_service.files().create(body=file_metadata,
-                                            media_body=media,
-                                            fields='id').execute()
+                                                 media_body=media,
+                                                 fields='id').execute()
 
 
 def main():
