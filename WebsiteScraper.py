@@ -7,7 +7,10 @@ class JsonScrapper():
 
     def ExtractIngredients(self, jsonDict):
 
-        return jsonDict['recipeIngredient']
+        if 'recipeIngredient' in jsonDict:
+            return jsonDict['recipeIngredient']
+        else:
+            return ''
 
     def ExtractInstructions(self, jsonDict):
 
@@ -42,10 +45,14 @@ class JsonScrapper():
             return jsonDict['name']
         elif 'headline' in jsonDict:
             return jsonDict['headline']
+        else:
+            return ''
 
     def ExtractRecipeData(self, soup):
         recipeDataJson = soup.find('script', type='application/ld+json')
         jsonDict = json.loads(recipeDataJson.string)
+        if type(jsonDict) == list:
+            jsonDict = jsonDict[0]
         recipeData = {}
         recipeData['name'] = self.ExtractRecipeName(jsonDict)
         recipeData['recipeIngredient'] = self.ExtractIngredients(jsonDict)
@@ -487,7 +494,7 @@ class RecipeObjectClass():
         if 'recipeInstructions' in self.data:
             return self.data['recipeInstructions']
         else:
-            return 'a'
+            return ''
 
 
     def GetRecipeErrors(self):
