@@ -6,6 +6,7 @@ import os.path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from GoogleDrive import GoogleDriveClass
 
+
 class GoogleDriveTestClass(unittest.TestCase):
 
     # The constructor of GoogleDriveClass gets the credentials of the user.
@@ -15,7 +16,6 @@ class GoogleDriveTestClass(unittest.TestCase):
 
         self.googleDrive = GoogleDriveClass()
         self.dummyFileName = '/home/sjdan2003/Cookbook/data/savedRecipes.json'
-
 
     def test_GetFileName(self):
 
@@ -28,7 +28,6 @@ class GoogleDriveTestClass(unittest.TestCase):
         expectedFileName = None
         self.assertEqual(testFileName, expectedFileName, 'File names do not match for no file name')
 
-
     def test_GetFileType(self):
 
         testFileType = self.googleDrive.GetFileType(self.dummyFileName)
@@ -39,7 +38,6 @@ class GoogleDriveTestClass(unittest.TestCase):
         testFileType = self.googleDrive.GetFileType(noFileTypePath)
         expectedFileType = None
         self.assertEqual(testFileType, expectedFileType, 'File types do not match for no file type')
-
 
     def test_ListFiles(self):
 
