@@ -217,10 +217,19 @@ class RecipeViewScreen(Screen):
     recipeInstructapions = ObjectProperty()
     recipeIngredients = ObjectProperty()
 
-    def SaveRecipes(self):
+    def ShowSaveRecipesScreen(self):
 
-        self.manager.transition.direction = 'left'
+        self.manager.transition.direction = 'right'
         self.manager.current = 'recipe save'
+
+    def ShowImportRecipeScreen(self):
+
+        self.manager.get_screen('recipe import').urlInput.text = ''
+        self.manager.get_screen('recipe import').recipeName.text = ''
+        self.manager.get_screen('recipe import').recipeInstructions.text = ''
+        self.manager.get_screen('recipe import').recipeIngredients.text = ''
+        self.manager.transition.direction = 'left'
+        self.manager.current = 'recipe import'
 
 
 class CookbookGuiApp(App):

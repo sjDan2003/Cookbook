@@ -148,20 +148,21 @@
                     id: changeButtonId
                     size_hint_y: .10
                     text: "Save/Load Recipes"
-                    on_press: root.SaveRecipes()
+                    on_press: root.ShowSaveRecipesScreen()
                 Button:
                     text: 'Go To Recipe Import'
                     size_hint_y: .10
-                    on_press:
-                        root.manager.transition.direction = 'left'
-                        root.manager.current = 'recipe import'
+                    on_press: root.ShowImportRecipeScreen()
+
 
             RecycleView:
                 data: []
                 id: recipeListId
                 viewclass: 'RecipeButton'
                 RecycleBoxLayout:
-                    default_size_hint: 1, None
+                    default_size_hint_x: None
+                    default_size_hint_y: None
+                    height: self.minimum_height
                     orientation: 'horizontal'
 
 
