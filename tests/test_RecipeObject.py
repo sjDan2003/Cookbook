@@ -22,7 +22,7 @@ class RecipeObjectTestClass(unittest.TestCase):
         mock_urlopen.return_value.__enter__.return_value.read.side_effect = [testString]
         recipeObject = RecipeObjectClass()
         source = recipeObject.GetHtmlData(testUrl)
-        print(source)
+        self.assertEqual(testString, source, 'Expected mocked GetHtmlData to return mocked data')
 
     @patch('WebsiteScraper.urllib.request.Request')
     @patch('WebsiteScraper.urllib.request.urlopen')
@@ -39,3 +39,13 @@ class RecipeObjectTestClass(unittest.TestCase):
         recipeObject = RecipeObjectClass()
         source = recipeObject.GetHtmlData(testUrl)
         self.assertEqual(testString, source, 'GetHtmlData should return blank string for errors')
+
+    def test_GetRecipeErrors_ErrorCode_404(self):
+
+        testRecipe = RecipeObjectClass()
+        testRecipe.statusCode = 404
+        message = testRecipe.GetRecipeErrors()
+        expectedShortMessage = 'Not Found'
+        expectedLongMessage = 'Please check the recipe web address and try again.'
+        expectedMessage = '{}\n{}'.format(expectedShortMessage, expectedLongMessage)
+        self.assertEqual(expectedMessage, message)

@@ -1,5 +1,6 @@
 import bs4 as bs
 import urllib.request
+from http.server import BaseHTTPRequestHandler
 import json
 
 
@@ -315,9 +316,11 @@ class RecipeObjectClass():
         if recipeObj is None:
             self.data = {}
             self.validData = False
+            self.statusCode = 0
         else:
             self.data = recipeObj.data
             self.validData = recipeObj.validData
+            self.statusCode = recipeObj.statusCode
 
 
     def GetScrapper(self, url):
@@ -377,13 +380,14 @@ class RecipeObjectClass():
         try:
             with urllib.request.urlopen(req) as response:
                 source = response.read()
-                print(response.status)
+                self.statusCode = response.getcode()
         except urllib.error.HTTPError as httpError:
-            print(httpError.code)
-            if httpError.code == 403:
-                # TODO: Website is still giving 403 Forbidden response.
-                # Header might need to be updated.
-                pass
+
+            # Save the error code for this object.
+            # The GUI will later poll this code and output
+            # relevant information to the user.
+            self.statusCode = httpError.code
+
         except urllib.error.URLError as urlError:
             # TODO: Investigate what URLErrors could happen
             # and properly handle each one.
@@ -496,6 +500,83 @@ class RecipeObjectClass():
         else:
             return ''
 
+    def GetHtmlResponseCodeDict(self):
+        """This function returns a table with an index of all Html Response
+        codes, and their corresponding message.
+        This is based on the table from http.serverBaseHTTPRequestHandler.responses
+        only that the messages have been modified to be more user friendly
+
+        Args:
+            None
+
+        Returns:
+            A dictionary containing error codes and their corresponding messages
+        """
+
+        return  {100: ('Continue', 'Request received, please continue'),
+                 101: ('Switching Protocols',
+                       'Switching to new protocol; obey Upgrade header'),
+
+                 200: ('OK', 'Request fulfilled, document follows'),
+                 201: ('Created', 'Document created, URL follows'),
+                 202: ('Accepted',
+                       'Request accepted, processing continues off-line'),
+                 203: ('Non-Authoritative Information', 'Request fulfilled from cache'),
+                 204: ('No Content', 'Request fulfilled, nothing follows'),
+                 205: ('Reset Content', 'Clear input form for further input.'),
+                 206: ('Partial Content', 'Partial content follows.'),
+
+                 300: ('Multiple Choices',
+                       'Object has several resources -- see URI list'),
+                 301: ('Moved Permanently', 'Object moved permanently -- see URI list'),
+                 302: ('Found', 'Object moved temporarily -- see URI list'),
+                 303: ('See Other', 'Object moved -- see Method and URL list'),
+                 304: ('Not Modified',
+                       'Document has not changed since given time'),
+                 305: ('Use Proxy',
+                       'You must use proxy specified in Location to access this '
+                       'resource.'),
+                 307: ('Temporary Redirect',
+                       'Object moved temporarily -- see URI list'),
+                 400: ('Bad Request',
+                       'Bad request syntax or unsupported method'),
+                 401: ('Unauthorized',
+                       'Sorry, but you do not have permission to view this recipe'),
+                 402: ('Payment Required',
+                       'Payment is required to view this recipe.'),
+                 403: ('Forbidden',
+                       'Sorry, but it is forbidden to access this recipe'),
+                 404: ('Not Found', 'Please check the recipe web address and try again.'),
+                 405: ('Method Not Allowed',
+                       'Specified method is invalid for this server.'),
+                 406: ('Not Acceptable', 'URI not available in preferred format.'),
+                 407: ('Proxy Authentication Required', 'You must authenticate with '
+                       'this proxy before proceeding.'),
+                 408: ('Request Timeout',
+                       'Sorry but the website timed out while trying to connect\n \
+                        Please try again later.'),
+                 409: ('Conflict', 'Request conflict.'),
+                 410: ('Gone',
+                       'Sorry but it seems like the recipe has been removed..'),
+                 411: ('Length Required', 'Client must specify Content-Length.'),
+                 412: ('Precondition Failed', 'Precondition in headers is false.'),
+                 413: ('Request Entity Too Large', 'Entity is too large.'),
+                 414: ('Request-URI Too Long', 'URI is too long.'),
+                 415: ('Unsupported Media Type', 'Entity body in unsupported format.'),
+                 416: ('Requested Range Not Satisfiable',
+                       'Cannot satisfy request range.'),
+                 417: ('Expectation Failed',
+                       'Expect condition could not be satisfied.'),
+                 500: ('Internal Server Error', 'Server got itself in trouble'),
+                 501: ('Not Implemented',
+                       'Server does not support this operation'),
+                 502: ('Bad Gateway', 'Invalid responses from another server/proxy.'),
+                 503: ('Service Unavailable',
+                       'The server cannot process the request due to a high load'),
+                 504: ('Gateway Timeout',
+                       'The gateway server did not receive a timely response'),
+                 505: ('HTTP Version Not Supported', 'Cannot fulfill request.'),
+                }
 
     def GetRecipeErrors(self):
         """This function looks at all of the parts of the recipe and looks for issues.
@@ -511,12 +592,30 @@ class RecipeObjectClass():
 
         errorStr = ''
 
-        if self.GetRecipeName() == '':
-            errorStr += 'Problem finding Recipe Name\n'
-        if self.GetIngredients() == '':
-            errorStr += 'Problem finding Recipe Ingredients\n'
-        if self.GetInstructions() == '':
-            errorStr += 'Problem finding Recipe Instructions\n'
+        # If there was an HTTP error with getting the recipe
+        # look up the code and output the error to the user.
+        if self.statusCode >= 400:
+
+            responsesDict = self.GetHtmlResponseCodeDict()
+            shortMessageIndex = 0
+            longMessageIndex = 1
+            if self.statusCode in responsesDict:
+                errorMessageTuple = responsesDict[self.statusCode]
+                errorStr = '{}\n{}'.format(errorMessageTuple[shortMessageIndex], errorMessageTuple[longMessageIndex])
+            else:
+                errorStr = 'Unknown Error Getting Recipe Information'
+
+        else:
+
+            # If the user was able to connect to the recipe, but for some
+            # reason the scrapper wasn't able to get a part of it
+            # inform the host which parts of the recipe it couldn't find.
+            if self.GetRecipeName() == '':
+                errorStr += 'Problem finding Recipe Name\n'
+            if self.GetIngredients() == '':
+                errorStr += 'Problem finding Recipe Ingredients\n'
+            if self.GetInstructions() == '':
+                errorStr += 'Problem finding Recipe Instructions\n'
 
         return errorStr
 
