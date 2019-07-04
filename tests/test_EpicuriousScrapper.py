@@ -1,10 +1,8 @@
 import unittest
 import bs4 as bs
-
 import os
-import sys
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from WebsiteScraper import EpicuriousScrapper
+
 
 class EpicuriousScrapperTestClass(unittest.TestCase):
 
@@ -18,7 +16,6 @@ class EpicuriousScrapperTestClass(unittest.TestCase):
         actualName = 'Slow-Roasted Chicken with Honey-Glazed Carrots and Ginger'
         testName = EpicuriousScrapper().ExtractRecipeName(self.soup)
         self.assertEqual(actualName, testName, 'Recipe name mismath.\nExpected {}\nGot {}'.format(actualName, testName))
-
 
     def test_RecipeIngredients(self):
 
@@ -35,7 +32,6 @@ class EpicuriousScrapperTestClass(unittest.TestCase):
         testIngredients = EpicuriousScrapper().ExtractIngredients(self.soup)
         self.assertTrue(isinstance(testIngredients, list), 'Ingredients should be a list')
         self.assertEqual(actualIngredients, testIngredients, 'Recipe Ingredient Mismatch')
-
 
     def test_RecipeInstructions(self):
 

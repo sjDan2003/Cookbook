@@ -10,7 +10,8 @@ from kivy.uix.popup import Popup
 from kivy.properties import ObjectProperty
 
 from WebsiteScraper import RecipeObjectClass
-from GoogleDrive import GoogleDriveClass
+from Services import LocalFileServiceClass, GoogleDriveClass, DropboxServiceClass
+
 
 class ErrorPopUp(Popup):
 
@@ -47,7 +48,7 @@ class RecipeSaveScreen(Screen):
     The recipe data is stored in a JSON format"""
 
     localBaseDir = os.path.split(os.path.abspath(__file__))[0]
-    localRecipeJson = os.path.join(localBaseDir, 'data/savedRecipes.json')
+    localRecipeJson = os.path.join(localBaseDir, 'RecipeData/savedRecipes.json')
 
     def LoadRecipeDataToRecycleView(self, recipeData):
 
@@ -58,7 +59,6 @@ class RecipeSaveScreen(Screen):
             if len(buttonText) > 20:
                 buttonText = '{}\n{}'.format(buttonText[0:20].strip(), buttonText[20:len(buttonText)].strip())
             self.manager.get_screen('recipe view').recipeList.data.append({"color": (1, 1, 1, 1), "font_size": "10sp", "text": buttonText, "input_data": recipObj})
-
 
     def CreateSaveableList(self, recipeListData):
         """Takes the recipe dictionary data in the recycle view, and copies
@@ -75,10 +75,8 @@ class RecipeSaveScreen(Screen):
         """Saves the recipe data to local storage"""
 
         saveableList = self.CreateSaveableList(self.manager.get_screen('recipe view').recipeList.data)
-        os.makedirs(os.path.dirname(self.localRecipeJson), exist_ok=True)
-
-        with open(self.localRecipeJson, 'w+') as fp:
-            json.dump(saveableList, fp)
+        localFileService = LocalFileServiceClass()
+        localFileService.WriteJsonFile(self.localRecipeJson, saveableList)
 
         self.manager.transition.direction = 'right'
         self.manager.current = 'recipe view'
@@ -88,13 +86,12 @@ class RecipeSaveScreen(Screen):
         and builds the recycle view list
         """
 
-        with open(self.localRecipeJson) as fp:
-            loadedRecipeData = json.load(fp)
+        localFileService = LocalFileServiceClass()
+        loadedRecipeData = localFileService.ReadJsonFile(self.localRecipeJson)
 
         self.LoadRecipeDataToRecycleView(loadedRecipeData)
         self.manager.transition.direction = 'right'
         self.manager.current = 'recipe view'
-
 
     def SaveToGoogleDrive(self):
 
@@ -138,6 +135,13 @@ class RecipeSaveScreen(Screen):
 
         self.manager.transition.direction = 'right'
         self.manager.current = 'recipe view'
+
+    def LoadFromDropbox(self):
+        pass
+
+    def SaveToDropbox(self):
+        pass
+
 
 class RecipeImportScreen(Screen):
     """The Recipe Import Screen is responsible for creating a new recipe.

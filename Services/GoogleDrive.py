@@ -5,9 +5,10 @@ from googleapiclient.discovery import build
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
 from apiclient.http import MediaFileUpload, MediaIoBaseDownload
+from .LocalFileService import LocalFileServiceClass
 
 
-class GoogleDriveClass():
+class GoogleDriveClass(LocalFileServiceClass):
 
     # If modifying these scopes, delete the file token.pickle.
     SCOPES = ['https://www.googleapis.com/auth/drive.file']
@@ -156,46 +157,6 @@ class GoogleDriveClass():
                 return fileItem['id']
         return None
 
-    def GetFileName(self, filePath):
-        """Gets the file name of the file being uploaded
-        or downloaded
-
-        Args:
-            filePath: The full file path to get the file name for
-
-        Returns:
-            If the file path contains a valid filename, then
-            the file name is returned.
-            Else, if the file path is a folder or blank, then
-            None is returned.
-        """
-
-        fileName = os.path.split(filePath)[1]
-
-        if fileName is not '':
-            return fileName
-        else:
-            return None
-
-    def GetFileType(self, filePath):
-        """Gets the file type from the file being uploaded
-        or downloaded to the user's Google Drive Account
-
-        Args:
-            filePath: The file to get the file type for
-
-        Returns:
-            If the file has a file type, that file type is returned
-            Else, this function returns None
-        """
-
-        fileType = os.path.splitext(filePath)[1]
-
-        if fileType is not '':
-            return fileType
-        else:
-            return None
-
     def GetMimeTypeFromFileName(self, filePath):
         """Determines the MIME type to use based on the file type
 
@@ -274,43 +235,3 @@ class GoogleDriveClass():
         file = self.drive_service.files().create(body=file_metadata,
                                                  media_body=media,
                                                  fields='id').execute()
-
-
-def main():
-    """Shows basic usage of the Drive v3 API.
-    Prints the names and ids of the first 10 files the user has access to.
-    """
-
-    cloudService = GoogleDriveClass()
-
-    localBaseDir = os.path.split(os.path.abspath(__file__))[0]
-    localRecipeJson = os.path.join(localBaseDir, 'data/savedRecipes.json')
-
-    print(localRecipeJson)
-
-    #cloudService.DeleteFile('1CS51JEXW9jlLGZq3JUzOmAMMnXVJlRak')
-    cloudService.DownloadFile('1dJqBAErXGC_rwqIGBvUj5pRfjUcK6V-P')
-    return
-    filename = cloudService.GetFileName(localRecipeJson)
-    print(filename)
-
-    if cloudService.DoesFileExist(filename):
-
-        print('Updating file')
-        fileId = cloudService.GetFileIdFromFilename(filename)
-        cloudService.UpdateFile(fileId, localRecipeJson)
-
-    else:
-
-        print('Uploading new file')
-        cloudService.UploadFile(localRecipeJson)
-
-
-    cloudService.PrintFileList()
-
-    #cloudService.DeleteFile(fileId)
-
-    #cloudService.PrintFileList()
-
-if __name__ == '__main__':
-    main()

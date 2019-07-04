@@ -1,17 +1,15 @@
 import unittest
 import bs4 as bs
-
 import os
-import sys
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from WebsiteScraper import CooksScrapper
+
 
 class KitchenScrapperTestClass(unittest.TestCase):
 
 
     @classmethod
     def setUpClass(self):
-         with open(os.path.join(os.path.dirname(__file__),'testHtml/cooksTest1.html'),'r') as inHtml:
+        with open(os.path.join(os.path.dirname(__file__),'testHtml/cooksTest1.html'),'r') as inHtml:
             soup = bs.BeautifulSoup(inHtml.read(), 'lxml')
             self.recipeData = CooksScrapper().ExtractRecipeData(soup)
 
@@ -20,7 +18,6 @@ class KitchenScrapperTestClass(unittest.TestCase):
         actualName = 'Genuine Virginia Baked Ham'
         testName = self.recipeData['name']
         self.assertEqual(actualName, testName, 'Recipe name mismath.\nExpected {}\nGot {}'.format(actualName, testName))
-
 
     def test_RecipeIngredients(self):
 
@@ -39,7 +36,6 @@ class KitchenScrapperTestClass(unittest.TestCase):
         testIngredients = self.recipeData['recipeIngredient']
         self.assertTrue(isinstance(testIngredients, list), 'Ingredients should be a list')
         self.assertEqual(actualIngredients, testIngredients, 'Recipe Ingredient Mismatch')
-
 
     def test_RecipeInstructions(self):
 

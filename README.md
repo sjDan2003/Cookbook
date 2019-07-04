@@ -54,6 +54,7 @@ To run these tests, execute the following command:
 ```shell
 $ python3 -m unittest discover
 ```
+To suppress print statements, append the ```-b ``` parameter to the unittest command
 
 ## Tested Websites
 

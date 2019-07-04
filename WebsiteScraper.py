@@ -63,7 +63,6 @@ class JsonScrapper():
 
 class CookingLightScrapper(JsonScrapper):
 
-
     def ExtractRecipeData(self, soup):
         """CookingLight uses the JSON format, but there are multiple JSONs in
         each HTML. Pull the second one and use the JSON library to load it."""
@@ -88,7 +87,6 @@ class AllRecipesScrapper():
             ingredients.append(ingredient.string)
         return ingredients
 
-
     def ExtractInstructions(self, soup):
 
         instructions = ''
@@ -96,11 +94,9 @@ class AllRecipesScrapper():
             instructions += '{}\n'.format(instuction.string)
         return instructions
 
-
     def ExtractRecipeName(self, soup):
 
         return soup.find('h1', id="recipe-main-content").string
-
 
     def ExtractRecipeData(self, soup):
         recipeData = {}
@@ -136,7 +132,6 @@ class EpicuriousScrapper():
 
         return recipeName
 
-
     def ExtractIngredients(self, soup):
 
         ingredients = []
@@ -146,7 +141,6 @@ class EpicuriousScrapper():
 
         return ingredients
 
-
     def ExtractInstructions(self, soup):
 
         instructions = ''
@@ -155,7 +149,6 @@ class EpicuriousScrapper():
             instructions += '{}\n'.format(instruction.string.strip())
 
         return instructions
-
 
     def ExtractRecipeData(self, soup):
         recipeData = {}
@@ -174,7 +167,7 @@ class TheKitchnScrapper():
     def ExtractIngredients(self, soup):
 
         ingredients = []
-        ingredient  = ''
+        ingredient = ''
 
         # Find all of the ingredients and add them to the ingredient list
         # Ingredient quantiy and text are seperated by span tags, so this function will have to
@@ -195,7 +188,6 @@ class TheKitchnScrapper():
 
         return instructions
 
-
     def ExtractRecipeData(self, soup):
         recipeData = {}
         recipeSoup = soup.find('div', class_='Recipe')
@@ -215,7 +207,6 @@ class BettyCrockerScrapper():
             ingredients.append('{} {}'.format(quantiy, description))
         return ingredients
 
-
     def ExtractInstructions(self, soup):
 
         instructions = ''
@@ -223,11 +214,9 @@ class BettyCrockerScrapper():
             instructions += '{}\n'.format(instuction.string.strip())
         return instructions
 
-
     def ExtractRecipeName(self, soup):
 
         return soup.find('h1', class_="recipePartTitleText").string
-
 
     def ExtractRecipeData(self, soup):
         recipeData = {}
@@ -245,7 +234,6 @@ class EatingWellScrapper():
             ingredients.append(ingredient.string.strip())
         return ingredients
 
-
     def ExtractInstructions(self, soup):
 
         instructions = ''
@@ -257,11 +245,9 @@ class EatingWellScrapper():
                 instructions += '{}\n'.format(instuction.string.strip())
         return instructions
 
-
     def ExtractRecipeName(self, soup):
 
         return soup.find('meta', property='og:title')['content']
-
 
     def ExtractRecipeData(self, soup):
         recipeData = {}
@@ -279,12 +265,10 @@ class CooksScrapper():
             ingredients.append(ingredient.string)
         return ingredients
 
-
     def ExtractInstructions(self, soup):
 
         instructions = soup.find('div', class_='instructions').get_text()
         return instructions
-
 
     def ExtractRecipeName(self, soup):
 
@@ -299,7 +283,6 @@ class CooksScrapper():
                 for word in rawName.split(' '):
                     name += '{} '.format(word.capitalize())
                 return name.strip()
-
 
     def ExtractRecipeData(self, soup):
         recipeData = {}
@@ -321,7 +304,6 @@ class RecipeObjectClass():
             self.data = recipeObj.data
             self.validData = recipeObj.validData
             self.statusCode = recipeObj.statusCode
-
 
     def GetScrapper(self, url):
         """Gets the class pointer to the specific scrapper based on the URL
@@ -354,7 +336,6 @@ class RecipeObjectClass():
             return CooksScrapper
         else:
             return JsonScrapper
-
 
     def GetHtmlData(self, url):
         """Retrieves the HTML data from a url
@@ -436,7 +417,6 @@ class RecipeObjectClass():
             self.validData = False
             print('Raw html data invalid')
 
-
     def SetRecipeFromDict(self, recipeDict):
         """This function is used to copy pre-parsed recipe data stored in a dictionary
         format to this object.
@@ -449,7 +429,6 @@ class RecipeObjectClass():
         """
         self.data = recipeDict
         self.validData = True
-
 
     def GetRecipeName(self):
         """Returns the recipe name to the calling function
@@ -482,7 +461,6 @@ class RecipeObjectClass():
             return self.data['recipeIngredient']
         else:
             return ''
-
 
     def GetInstructions(self):
         """Returns the recipe instructions to the calling function
@@ -618,7 +596,6 @@ class RecipeObjectClass():
                 errorStr += 'Problem finding Recipe Instructions\n'
 
         return errorStr
-
 
     def GetData(self):
         """Returns the dictionary data of the recipie to the calling function
