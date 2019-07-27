@@ -1,7 +1,7 @@
 import unittest
 import bs4 as bs
 import os
-from WebsiteScraper import JsonScrapper
+from RecipeScrapers import JsonScraper
 
 
 class JsonScrapperScrapperTestClass(unittest.TestCase):
@@ -11,7 +11,7 @@ class JsonScrapperScrapperTestClass(unittest.TestCase):
     def setUpClass(self):
         with open(os.path.join(os.path.dirname(__file__),'testHtml/foodNetworkTest1.html'),'r') as inHtml:
             soup = bs.BeautifulSoup(inHtml.read(), 'lxml')
-            self.recipeData = JsonScrapper().ExtractRecipeData(soup)
+            self.recipeData = JsonScraper().ExtractRecipeData(soup)
 
     def test_RecipeName(self):
 

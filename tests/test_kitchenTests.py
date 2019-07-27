@@ -1,7 +1,7 @@
 import unittest
 import bs4 as bs
 import os
-from WebsiteScraper import TheKitchnScrapper
+from RecipeScrapers import TheKitchnScraper
 
 
 class KitchenScrapperTestClass(unittest.TestCase):
@@ -11,7 +11,7 @@ class KitchenScrapperTestClass(unittest.TestCase):
     def setUpClass(self):
         with open(os.path.join(os.path.dirname(__file__),'testHtml/thekitchnTest1.html'),'r') as inHtml:
             soup = bs.BeautifulSoup(inHtml.read(), 'lxml')
-            self.recipeData = TheKitchnScrapper().ExtractRecipeData(soup)
+            self.recipeData = TheKitchnScraper().ExtractRecipeData(soup)
 
     def test_RecipeName(self):
 
