@@ -1,21 +1,25 @@
 import unittest
 from unittest.mock import patch, mock_open
 from Services import DropboxServiceClass
+from dropbox.exceptions import ApiError
 
 
 class DropboxTestClass(unittest.TestCase):
 
     # The constructor of DropboxServiceClass gets the credentials of the user.
     # Since we don't want to do this in test, we'll mock this out.
-    @patch('Services.DropboxServiceClass.__init__', unittest.mock.Mock(return_value=None))
     def setUp(self):
 
-        self.dropBoxObj = DropboxServiceClass()
+        with patch('Services.DropboxServiceClass.GetAccessToken') as mockedToken:
+            with patch('Services.DropboxService.Dropbox', spec=True) as mockedDropbox:
+                mockedToken.return_value = 'Test Token'
+                self.dropBoxObj = DropboxServiceClass()
+                self.testFilename = '/data/testfile.txt'
 
     def test_GetAccesToken(self):
 
         with patch('builtins.open', new_callable=mock_open()) as mockedOpen:
-            with patch('Services.DropboxService.json.load') as mock_json:
+            with patch('DropboxService.json.load') as mock_json:
 
                 self.dropBoxObj.GetAccessToken()
                 mockedOpen.assert_called_with('data/DropboxData.json')
@@ -24,4 +28,15 @@ class DropboxTestClass(unittest.TestCase):
 
         with patch('builtins.open', create=True) as mockedOpen:
             mockedOpen.side_effect = FileNotFoundError()
-            self.dropBoxObj.GetAccessToken()
+            expected_token = 'Error'
+            actual_token = self.dropBoxObj.GetAccessToken()
+            self.assertEqual(expected_token, actual_token, 'Expecting Error')
+
+    # TODO: Determine how to return a mocked Dropbox object without actually
+    # authorizing an account.
+    @unittest.SkipTest
+    def test_SaveToDropbox(self):
+
+        with patch('builtins.open', create=mock_open()) as mockedOpen:
+            with patch('Services.DropboxService.Dropbox.files_upload') as mockedFilesUpload:
+                self.dropBoxObj.SaveToDropbox(self.testFilename)
