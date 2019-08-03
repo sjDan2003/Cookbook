@@ -1,6 +1,4 @@
-import bs4 as bs
-import urllib.request
-from RecipeScrapers import *
+from RecipeScrapers import RecipeScraper
 
 
 class RecipeObjectClass():
@@ -9,138 +7,47 @@ class RecipeObjectClass():
 
         if recipeObj is None:
             self.data = {}
-            self.validData = False
-            self.statusCode = 0
+            self.status_code = 0
         else:
             self.data = recipeObj.data
-            self.validData = recipeObj.validData
-            self.statusCode = recipeObj.statusCode
+            self.status_code = recipeObj.status_code
 
-    def GetScrapper(self, url):
-        """Gets the class pointer to the specific scrapper based on the URL
-        of the food website.
+    def get_recipe_data_from_url(self, url):
 
-        Different food sites use different methods to format the recipe data
-        This function identifies the best scrapper to scrape the recipe data
-        and returns it to the calling fucntion
+        """Creates a new scraper object and extracts the recipe
+        data from the user provided URL
 
         Args:
-            url: The full URL of the food website
-
-        Returns:
-            Class pointer for the specific scraper to parse the website
-        """
-
-        if 'allrecipes' in url:
-            return AllRecipesScraper
-        elif 'epicurious' in url:
-            return EpicuriousScrapper
-        elif 'cookinglight' in url or 'myrecipes' in url:
-            return CookingLightScraper
-        elif 'thekitchn' in url:
-            return TheKitchnScrapper
-        elif 'bettycrocker' in url:
-            return BettyCrockerScraper
-        elif 'eatingwell' in url:
-            return EatingWellScraper
-        elif 'cooks' in url:
-            return CooksScraper
-        else:
-            return JsonScraper
-
-    def GetHtmlData(self, url):
-        """Retrieves the HTML data from a url
-        Other functions or libraries will be used to parse this data.
-
-        Args:
-            url: The website to open and read the HTML data
-
-        Returns:
-            If there is an issue opening the website this function will return
-            a blank string
-            Otherwise the entire website's HTML data will be returned.
-        """
-
-        # Adding a custom header will prevent a 403 Forbidden response from a website
-        # Rather than using the default header and retrying on a 403, just send
-        # the custom header initially.
-        requestHeaders = {}
-        requestHeaders['User-Agent'] = 'Chrome Browser'
-        source = ''
-
-        # Create a request so headers can be added
-        req = urllib.request.Request(url, headers=requestHeaders)
-        try:
-            with urllib.request.urlopen(req) as response:
-                source = response.read()
-                self.statusCode = response.getcode()
-        except urllib.error.HTTPError as httpError:
-
-            # Save the error code for this object.
-            # The GUI will later poll this code and output
-            # relevant information to the user.
-            self.statusCode = httpError.code
-
-        except urllib.error.URLError as urlError:
-            # TODO: Investigate what URLErrors could happen
-            # and properly handle each one.
-            # For now just print the cause so the app doesn't crash
-            # on the user.
-            print(urlError.reason)
-
-        return source
-
-    def GetRecipeFromUrl(self, url):
-        """Determines how to scrape the recipe data using the URL, and passes
-        the URL's HTML data to the correct scrapper to extract the recipe data.
-        If there is a valid recipe data in the URL the validData flag is set to True
-        and use the data from the recipe scrapper
-        Otherwise the validData flag is set to false and the data dict is set to empty.
-
-        Args:
-            url: The website where the recipe is located.
-
-        Returns:
-            None.
-        """
-
-        rawHtmlData = self.GetHtmlData(url)
-
-        # If there was an issue getting the HTML data, treat this as invalid data
-        # and return.
-        if rawHtmlData != '':
-            soup = bs.BeautifulSoup(rawHtmlData, 'lxml')
-            scrapper = self.GetScrapper(url)
-            recipeData = scrapper().ExtractRecipeData(soup)
-            if recipeData is not None:
-                self.data = recipeData
-                self.validData = True
-            else:
-                self.data = {}
-                self.validData = False
-                print('Could not find recipe data for {}'.format(url))
-                if type(rawHtmlData) is bytes:
-                    # TODO: Need to find a way to properly decode these sites.
-                    # Beautiful Soup will correctly not find the type, but print
-                    # the reason why
-                    print('Source is byte string')
-        else:
-            self.data = {}
-            self.validData = False
-            print('Raw html data invalid')
-
-    def SetRecipeFromDict(self, recipeDict):
-        """This function is used to copy pre-parsed recipe data stored in a dictionary
-        format to this object.
-
-        Args:
-            recipeDict: A dictionary containing pre-parsed recipe data
+            url: The web address for the recipe to scrape
 
         Returns:
             None
         """
-        self.data = recipeDict
-        self.validData = True
+
+        self.data, self.status_code = RecipeScraper().scrape_recipe_data(url)
+
+    def is_data_valid(self):
+
+        """Checks to make sure that the HTML data is valid
+
+        Returns:
+            True if at least one recipe field is valid
+            False if there are not valid recipe fields
+        """
+
+        return self.data != {}
+
+    def set_recipe_from_dict(self, recipe_dict):
+        """This function is used to copy pre-parsed recipe data stored in a dictionary
+        format to this object.
+
+        Args:
+            recipe_dict: A dictionary containing pre-parsed recipe data
+
+        Returns:
+            None
+        """
+        self.data = recipe_dict
 
     def GetRecipeName(self):
         """Returns the recipe name to the calling function
@@ -281,21 +188,21 @@ class RecipeObjectClass():
             If there are no errors, a blank string is returned
         """
 
-        errorStr = ''
+        error_string = ''
 
         # If there was an HTTP error with getting the recipe
         # look up the code and output the error to the user.
-        if self.statusCode >= 400:
+        if self.status_code >= 400:
 
-            responsesDict = self.GetHtmlResponseCodeDict()
-            shortMessageIndex = 0
-            longMessageIndex = 1
-            if self.statusCode in responsesDict:
-                errorMessageTuple = responsesDict[self.statusCode]
-                errorStr = '{}\n{}'.format(errorMessageTuple[shortMessageIndex],
-                                           errorMessageTuple[longMessageIndex])
+            responses_dict = self.GetHtmlResponseCodeDict()
+            short_message_index = 0
+            long_message_index = 1
+            if self.status_code in responses_dict:
+                error_message_tuple = responses_dict[self.status_code]
+                error_string = '{}\n{}'.format(error_message_tuple[short_message_index],
+                                           error_message_tuple[long_message_index])
             else:
-                errorStr = 'Unknown Error Getting Recipe Information'
+                error_string = 'Unknown Error Getting Recipe Information'
 
         else:
 
@@ -303,13 +210,13 @@ class RecipeObjectClass():
             # reason the scrapper wasn't able to get a part of it
             # inform the host which parts of the recipe it couldn't find.
             if self.GetRecipeName() == '':
-                errorStr += 'Problem finding Recipe Name\n'
+                error_string += 'Problem finding Recipe Name\n'
             if self.GetIngredients() == '':
-                errorStr += 'Problem finding Recipe Ingredients\n'
+                error_string += 'Problem finding Recipe Ingredients\n'
             if self.GetInstructions() == '':
-                errorStr += 'Problem finding Recipe Instructions\n'
+                error_string += 'Problem finding Recipe Instructions\n'
 
-        return errorStr
+        return error_string
 
     def GetData(self):
         """Returns the dictionary data of the recipie to the calling function
