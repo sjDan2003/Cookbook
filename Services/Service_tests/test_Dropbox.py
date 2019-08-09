@@ -10,7 +10,7 @@ class DropboxTestClass(unittest.TestCase):
     # Since we don't want to do this in test, we'll mock this out.
     def setUp(self):
 
-        with patch('Services.DropboxServiceClass.GetAccessToken') as mockedToken:
+        with patch('Services.DropboxServiceClass.get_access_token') as mockedToken:
             with patch('Services.DropboxService.Dropbox', spec=True) as mockedDropbox:
                 mockedToken.return_value = 'Test Token'
                 self.dropBoxObj = DropboxServiceClass()
@@ -21,7 +21,7 @@ class DropboxTestClass(unittest.TestCase):
         with patch('builtins.open', new_callable=mock_open()) as mockedOpen:
             with patch('DropboxService.json.load') as mock_json:
 
-                self.dropBoxObj.GetAccessToken()
+                self.dropBoxObj.get_access_token()
                 mockedOpen.assert_called_with('data/DropboxData.json')
 
     def test_GetAccessToken_FileNotFound(self):
@@ -29,14 +29,14 @@ class DropboxTestClass(unittest.TestCase):
         with patch('builtins.open', create=True) as mockedOpen:
             mockedOpen.side_effect = FileNotFoundError()
             expected_token = 'Error'
-            actual_token = self.dropBoxObj.GetAccessToken()
+            actual_token = self.dropBoxObj.get_access_token()
             self.assertEqual(expected_token, actual_token, 'Expecting Error')
 
     # TODO: Determine how to return a mocked Dropbox object without actually
     # authorizing an account.
     @unittest.SkipTest
-    def test_SaveToDropbox(self):
+    def test_save_to_dropbox(self):
 
         with patch('builtins.open', create=mock_open()) as mockedOpen:
             with patch('Services.DropboxService.Dropbox.files_upload') as mockedFilesUpload:
-                self.dropBoxObj.SaveToDropbox(self.testFilename)
+                self.dropBoxObj.save_to_dropbox(self.testFilename)

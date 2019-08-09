@@ -13,13 +13,13 @@ class JsonScrapperScrapperTestClass(unittest.TestCase):
             soup = bs.BeautifulSoup(inHtml.read(), 'lxml')
             self.recipeData = JsonScraper().ExtractRecipeData(soup)
 
-    def test_RecipeName(self):
+    def test_recipe_name(self):
 
         actualName = 'Perfect Turkey Burgers'
         testName = self.recipeData['name']
         self.assertEqual(actualName, testName, 'Recipe name mismath.\nExpected {}\nGot {}'.format(actualName, testName))
 
-    def test_RecipeIngredients(self):
+    def test_recipe_ingredients(self):
 
         actualIngredients = ['1 large portobello mushroom cap',
                              '1 tablespoon coarsely chopped shallot',
@@ -35,7 +35,7 @@ class JsonScrapperScrapperTestClass(unittest.TestCase):
         self.assertTrue(isinstance(testIngredients, list), 'Ingredients should be a list')
         self.assertEqual(actualIngredients, testIngredients, 'Recipe Ingredient Mismatch')
 
-    def test_RecipeInstructions(self):
+    def test_recipe_instructions(self):
 
         testInstructions = self.recipeData['recipeInstructions']
         self.assertTrue(isinstance(testInstructions, str), 'Recipe Instructions should be a string')

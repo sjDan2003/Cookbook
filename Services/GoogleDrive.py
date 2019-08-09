@@ -215,7 +215,7 @@ class GoogleDriveClass(LocalFileServiceClass):
                                                  media_body=media,
                                                  fields='id').execute()
 
-    def UploadFile(self, filePath):
+    def upload_file(self, filePath):
 
         """Uploads a file to the user's Google Drive account
 

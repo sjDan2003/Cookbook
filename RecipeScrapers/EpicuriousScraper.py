@@ -4,13 +4,13 @@ import json
 
 class EpicuriousScraper():
 
-    def ExtractRecipeName(self, soup):
+    def Extractrecipe_name(self, soup):
         """One of the places where the recipe name is stored on epicurious is
         in a variable called digital data. This variable stores a dictionary objectn
         containing not only the recipe name, but other information that could be
         useful in the future.
         """
-        recipeName = ''
+        recipe_name = ''
         for item in soup.find_all('script', type='text/javascript'):
             searchStr = 'var digitalData = '
             if searchStr in item.string:
@@ -23,10 +23,10 @@ class EpicuriousScraper():
 
                 # Convert the string to a dict
                 jsonDigitalData = json.loads(digitalDataVar)
-                recipeName = jsonDigitalData['display']
+                recipe_name = jsonDigitalData['display']
                 break
 
-        return recipeName
+        return recipe_name
 
     def ExtractIngredients(self, soup):
 
@@ -48,7 +48,7 @@ class EpicuriousScraper():
 
     def ExtractRecipeData(self, soup):
         recipeData = {}
-        recipeData['name'] = self.ExtractRecipeName(soup)
+        recipeData['name'] = self.Extractrecipe_name(soup)
         recipeData['recipeIngredient'] = self.ExtractIngredients(soup)
         recipeData['recipeInstructions'] = self.ExtractInstructions(soup)
         return recipeData

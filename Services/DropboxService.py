@@ -1,20 +1,29 @@
+import json
 from dropbox import Dropbox
 from dropbox.exceptions import ApiError
-import json
+from dropbox.files import WriteMode
 
 
 class DropboxServiceClass:
+
+    """This class manages the authorization and managment of a user's
+    dropbox account.
+
+    Args:
+        dropbox: A dropbox object with the ability to access a user's
+                 Dropbox account
+    """
 
     def __init__(self):
 
         self.dropbox = None
 
-        accessToken = self.GetAccessToken()
+        access_token = self.get_access_token()
 
-        if len(accessToken) != 0:
-            self.dropbox = Dropbox(accessToken)
+        if access_token != '' or access_token != 'Error':
+            self.dropbox = Dropbox(access_token)
 
-    def GetAccessToken(self):
+    def get_access_token(self):
         """Reads the developer's access token from the Dropbox Json file
         This access token should only be used for development purposes
 
@@ -22,36 +31,39 @@ class DropboxServiceClass:
             THe developer's access token
         """
 
-        accessToken = ''
-        developerAccessTokenFilename = 'data/DropboxData.json'
+        access_token = ''
+        developer_access_token_filename = 'data/DropboxData.json'
 
         try:
 
-            with open(developerAccessTokenFilename) as dropboxData:
+            with open(developer_access_token_filename) as dropbox_data:
 
-                dropboxDataDict = json.load(dropboxData)
-                accessToken = dropboxDataDict['Access Token']
+                dropbox_data_dict = json.load(dropbox_data)
+                access_token = dropbox_data_dict['Access Token']
 
         except FileNotFoundError as error:
 
-            accessToken = 'Error'
+            access_token = 'Error'
 
-        return accessToken
+        return access_token
 
-    def GetUserAccountInfo(self):
+    def get_user_account_info(self):
+
+        """Returns a user's account information in a dictionary format
+        """
 
         return self.dropbox.users_get_current_account()
 
-    def _files_upload_wrapper(in_file_pointer, dropbox_file_path):
+    def _files_upload_wrapper(self, in_file_pointer, dropbox_file_path):
 
         # We use WriteMode=overwrite to make sure that the settings in the file
         # are changed on upload
         return_message = None
-        print("Uploading " + localFilePath + " to Dropbox as " + dropboxFilePath + "...")
+        print("Uploading " + in_file_pointer + " to Dropbox as " + dropbox_file_path + "...")
         try:
-            self.dropbox.files_upload(readFile.read(),
-                                        dropboxFilePath,
-                                        mode=WriteMode('overwrite'))
+            self.dropbox.files_upload(in_file_pointer.read(),
+                                      dropbox_file_path,
+                                      mode=WriteMode('overwrite'))
         except ApiError as err:
             # This checks for the specific error where a user doesn't have
             # enough Dropbox space quota to upload this file
@@ -65,18 +77,20 @@ class DropboxServiceClass:
 
         return return_message
 
-    def SaveToDropbox(self, localFilePath, dropboxFilePath='/my-file-backup.txt'):
+    def save_to_dropbox(self, localFilePath, dropbox_file_path='/my-file-backup.txt'):
 
         return_message = None
 
         try:
-            with open(localFilePath, 'rb') as readFile:
-                return_message = _files_upload_wrapper(readFile,
-                                                       dropbox_file_path)
+            with open(localFilePath, 'rb') as read_file:
+                return_message = self._files_upload_wrapper(read_file,
+                                                            dropbox_file_path)
 
         except FileNotFoundError as error:
             return_message = 'Local file not found'
 
+        return return_message
+
 
 # dropBoxObj = DropboxServiceClass()
-# print(dropBoxObj.GetUserAccountInfo())
+# print(dropBoxObj.get_user_account_info())

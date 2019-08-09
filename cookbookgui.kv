@@ -3,7 +3,7 @@
 
 
 <RecipeButton>:
-    on_press: root.ChangeRecipe(self.input_data)
+    on_press: root.change_recipe(self.input_data)
 
 <ErrorPopUp>:
     id:errorPopUp
@@ -31,26 +31,26 @@
 
         Button:
             text: 'Save to Local Storage'
-            on_press: root.SaveToLocalStorage()
+            on_press: root.save_to_local_storage()
         Button:
             text: 'Save to Google Drive'
-            on_press: root.SaveToGoogleDrive()
+            on_press: root.save_to_google_drive()
         Button:
             text: 'Save to Dropbox'
         Button:
             text: 'Load from Local Storage'
-            on_press: root.LoadFromLocalStorage()
+            on_press: root.load_to_local_storage()
         Button:
             text: 'Load from Google Drive'
-            on_press: root.LoadFromGoogleDrive()
+            on_press: root.load_from_google_drive()
         Button:
             text: 'Load from Dropbox'
 
 <RecipeImportScreen>:
-    urlInput: urlInputId
-    recipeName: recipeNameId
-    recipeInstructions: recipeInstructionsId
-    recipeIngredients: recipeIngredientsId
+    url_input: urlInputId
+    recipe_name: recipe_nameId
+    recipe_instructions: recipe_instructionsId
+    recipe_ingredients: recipe_ingredientsId
     name: 'recipe import'
     BoxLayout:
         orientation: 'vertical'
@@ -68,12 +68,12 @@
             Button:
                 text: 'Import Recipe'
                 size_hint_x: .25
-                on_press: root.ImportRecipe()
+                on_press: root.import_recipe()
         BoxLayout:
             orientation: "vertical"
             size_hint_y: 1
             Label:
-                id: recipeNameId
+                id: recipe_nameId
                 font_size: "50dp"
                 size_hint_y: .2
                 text: "Recipe Title"
@@ -83,11 +83,11 @@
                 cols: 2
 
                 TextInput:
-                    id: recipeIngredientsId
+                    id: recipe_ingredientsId
                     font_size: "20dp"
 
                 TextInput:
-                    id: recipeInstructionsId
+                    id: recipe_instructionsId
                     font_size: "20dp"
                     multiline: True
         BoxLayout:
@@ -95,17 +95,17 @@
             size_hint_y: .1
             Button:
                 text: 'Cancel'
-                on_press: root.CancelRecipeImport()
+                on_press: root.cancel_recipe_import()
             Button:
                 text: 'Confirm'
-                on_press: root.ConfirmRecipeImport()
+                on_press: root.confirm_recipe_import()
 
 
 <RecipeViewScreen>:
     recipeList: recipeListId
-    recipeName: recipeNameId
-    recipeInstructions: recipeInstructionsId
-    recipeIngredients: recipeIngredientsId
+    recipe_name: recipe_nameId
+    recipe_instructions: recipe_instructionsId
+    recipe_ingredients: recipe_ingredientsId
     name: 'recipe view'
     id: recipeViewScreenId
     GridLayout:
@@ -118,7 +118,7 @@
             orientation: "vertical"
 
             Label:
-                id: recipeNameId
+                id: recipe_nameId
                 font_size: "50dp"
                 size_hint_y: .2
                 text: ""
@@ -128,12 +128,12 @@
                 cols: 2
 
                 TextInput:
-                    id: recipeIngredientsId
+                    id: recipe_ingredientsId
                     font_size: "25dp"
                     text: ""
 
                 TextInput:
-                    id: recipeInstructionsId
+                    id: recipe_instructionsId
                     font_size: "25dp"
                     multiline: True
         GridLayout:
@@ -148,11 +148,11 @@
                     id: changeButtonId
                     size_hint_y: .10
                     text: "Save/Load Recipes"
-                    on_press: root.ShowSaveRecipesScreen()
+                    on_press: root.show_save_recipes_screen()
                 Button:
                     text: 'Go To Recipe Import'
                     size_hint_y: .10
-                    on_press: root.ShowImportRecipeScreen()
+                    on_press: root.show_import_recipe_screen()
 
 
             RecycleView:

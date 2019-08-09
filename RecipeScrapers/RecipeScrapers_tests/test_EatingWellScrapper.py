@@ -13,13 +13,13 @@ class KitchenScrapperTestClass(unittest.TestCase):
             soup = bs.BeautifulSoup(inHtml.read(), 'lxml')
             self.recipeData = EatingWellScraper().ExtractRecipeData(soup)
 
-    def test_RecipeName(self):
+    def test_recipe_name(self):
 
         actualName = 'Gluten-Free Pumpkin Waffles Recipe'
         testName = self.recipeData['name']
         self.assertEqual(actualName, testName, 'Recipe name mismath.\nExpected {}\nGot {}'.format(actualName, testName))
 
-    def test_RecipeIngredients(self):
+    def test_recipe_ingredients(self):
 
         actualIngredients = ['Nonstick cooking spray',
                              '½ cup gluten-free all-purpose flour',
@@ -41,7 +41,7 @@ class KitchenScrapperTestClass(unittest.TestCase):
         self.assertTrue(isinstance(testIngredients, list), 'Ingredients should be a list')
         self.assertEqual(actualIngredients, testIngredients, 'Recipe Ingredient Mismatch')
 
-    def test_RecipeInstructions(self):
+    def test_recipe_instructions(self):
 
         testInstructions = self.recipeData['recipeInstructions']
         self.assertTrue(isinstance(testInstructions, str), 'Recipe Instructions should be a string')

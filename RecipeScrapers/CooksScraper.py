@@ -13,7 +13,7 @@ class CooksScraper():
         instructions = soup.find('div', class_='instructions').get_text()
         return instructions
 
-    def ExtractRecipeName(self, soup):
+    def Extractrecipe_name(self, soup):
 
         # The recipe title is captalized for cooks.com
         # When the title is found, make it all lower case then capitalize
@@ -29,7 +29,7 @@ class CooksScraper():
 
     def ExtractRecipeData(self, soup):
         recipeData = {}
-        recipeData['name'] = self.ExtractRecipeName(soup)
+        recipeData['name'] = self.Extractrecipe_name(soup)
         recipeData['recipeIngredient'] = self.ExtractIngredients(soup)
         recipeData['recipeInstructions'] = self.ExtractInstructions(soup)
         return recipeData

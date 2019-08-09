@@ -41,7 +41,7 @@ class JsonScraper():
         else:
             return ''
 
-    def ExtractRecipeName(self, jsonDict):
+    def Extractrecipe_name(self, jsonDict):
         if 'name' in jsonDict:
             return jsonDict['name']
         elif 'headline' in jsonDict:
@@ -55,7 +55,7 @@ class JsonScraper():
         if type(jsonDict) == list:
             jsonDict = jsonDict[0]
         recipeData = {}
-        recipeData['name'] = self.ExtractRecipeName(jsonDict)
+        recipeData['name'] = self.Extractrecipe_name(jsonDict)
         recipeData['recipeIngredient'] = self.ExtractIngredients(jsonDict)
         recipeData['recipeInstructions'] = self.ExtractInstructions(jsonDict)
         return recipeData

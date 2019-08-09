@@ -11,8 +11,10 @@ class GoogleDriveTestClass(unittest.TestCase):
     def setUp(self):
 
         self.googleDrive = GoogleDriveClass()
-        self.dummyFileName = '/home/sjdan2003/Cookbook/data/savedRecipes.json'
+        self.dummyFileName = '/data/savedRecipes.json'
 
+    # TODO: Now that I have a better understanding of unittest's Mocking system, need
+    # come up with a test plan for unittesting Google Drive methods.
     def test_ListFiles(self):
 
         pass

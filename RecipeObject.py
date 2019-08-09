@@ -3,14 +3,14 @@ from RecipeScrapers import RecipeScraper
 
 class RecipeObjectClass():
 
-    def __init__(self, recipeObj=None):
+    def __init__(self, recipe_object=None):
 
-        if recipeObj is None:
+        if recipe_object is None:
             self.data = {}
             self.status_code = 0
         else:
-            self.data = recipeObj.data
-            self.status_code = recipeObj.status_code
+            self.data = recipe_object.data
+            self.status_code = recipe_object.status_code
 
     def get_recipe_data_from_url(self, url):
 
@@ -49,7 +49,7 @@ class RecipeObjectClass():
         """
         self.data = recipe_dict
 
-    def GetRecipeName(self):
+    def get_recipe_name(self):
         """Returns the recipe name to the calling function
 
         Args:
@@ -65,7 +65,7 @@ class RecipeObjectClass():
         else:
             return ''
 
-    def GetIngredients(self):
+    def get_ingredients(self):
         """Returns the recipe ingredients to the calling function
 
         Args:
@@ -81,7 +81,7 @@ class RecipeObjectClass():
         else:
             return ''
 
-    def GetInstructions(self):
+    def get_instructions(self):
         """Returns the recipe instructions to the calling function
 
         Args:
@@ -97,7 +97,7 @@ class RecipeObjectClass():
         else:
             return ''
 
-    def GetHtmlResponseCodeDict(self):
+    def get_html_response_code_dict(self):
         """This function returns a table with an index of all Html Response
         codes, and their corresponding message.
         This is based on the table from http.serverBaseHTTPRequestHandler.responses
@@ -176,7 +176,7 @@ class RecipeObjectClass():
                 505: ('HTTP Version Not Supported', 'Cannot fulfill request.'),
                 }
 
-    def GetRecipeErrors(self):
+    def get_recipe_errors(self):
         """This function looks at all of the parts of the recipe and looks for issues.
         If there are any issues the user should be notified.
 
@@ -194,13 +194,13 @@ class RecipeObjectClass():
         # look up the code and output the error to the user.
         if self.status_code >= 400:
 
-            responses_dict = self.GetHtmlResponseCodeDict()
+            responses_dict = self.get_html_response_code_dict()
             short_message_index = 0
             long_message_index = 1
             if self.status_code in responses_dict:
                 error_message_tuple = responses_dict[self.status_code]
                 error_string = '{}\n{}'.format(error_message_tuple[short_message_index],
-                                           error_message_tuple[long_message_index])
+                                               error_message_tuple[long_message_index])
             else:
                 error_string = 'Unknown Error Getting Recipe Information'
 
@@ -209,16 +209,16 @@ class RecipeObjectClass():
             # If the user was able to connect to the recipe, but for some
             # reason the scrapper wasn't able to get a part of it
             # inform the host which parts of the recipe it couldn't find.
-            if self.GetRecipeName() == '':
+            if self.get_recipe_name() == '':
                 error_string += 'Problem finding Recipe Name\n'
-            if self.GetIngredients() == '':
+            if self.get_ingredients() == '':
                 error_string += 'Problem finding Recipe Ingredients\n'
-            if self.GetInstructions() == '':
+            if self.get_instructions() == '':
                 error_string += 'Problem finding Recipe Instructions\n'
 
         return error_string
 
-    def GetData(self):
+    def get_data(self):
         """Returns the dictionary data of the recipie to the calling function
 
         Args:

@@ -60,7 +60,7 @@ class RecipeScraper:
             None.
         """
 
-        raw_html_data = self.get_html_data(url)
+        raw_html_data, status_code = self.get_html_data(url)
 
         # If there was an issue getting the HTML data, treat this as invalid data
         # and return.
@@ -82,7 +82,7 @@ class RecipeScraper:
             recipe_data = {}
             print('Raw html data invalid')
 
-        return recipe_data
+        return recipe_data, status_code
 
     def get_html_data(self, url):
         """Retrieves the HTML data from a url

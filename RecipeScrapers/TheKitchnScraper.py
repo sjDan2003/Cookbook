@@ -2,7 +2,7 @@ import bs4 as bs
 
 class TheKitchnScraper():
 
-    def ExtractRecipeName(self, soup):
+    def Extractrecipe_name(self, soup):
 
         return soup.find('h2', class_='Recipe__title').string
 
@@ -33,7 +33,7 @@ class TheKitchnScraper():
     def ExtractRecipeData(self, soup):
         recipeData = {}
         recipeSoup = soup.find('div', class_='Recipe')
-        recipeData['name'] = self.ExtractRecipeName(recipeSoup)
+        recipeData['name'] = self.Extractrecipe_name(recipeSoup)
         recipeData['recipeIngredient'] = self.ExtractIngredients(recipeSoup)
         recipeData['recipeInstructions'] = self.ExtractInstructions(recipeSoup)
         return recipeData

@@ -9,7 +9,8 @@ class LocalFileServiceClass:
         to a JSON file somewhere on local storage
 
         Args:
-            filename: The full file path and filename where the data is to be saved
+            filename: The full file path and filename where
+            the data should to be saved
             jsonData: Dictionary formatted data to be saved
 
         Returns:

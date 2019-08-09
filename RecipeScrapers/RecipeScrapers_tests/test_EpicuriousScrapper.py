@@ -12,12 +12,12 @@ class EpicuriousScrapperTestClass(unittest.TestCase):
         with open(os.path.join(os.path.dirname(__file__),'testHtml/epicuriousTest1.html'),'r') as inHtml:
             self.soup = bs.BeautifulSoup(inHtml.read(), 'lxml')
 
-    def test_RecipeName(self):
+    def test_recipe_name(self):
         actualName = 'Slow-Roasted Chicken with Honey-Glazed Carrots and Ginger'
-        testName = EpicuriousScraper().ExtractRecipeName(self.soup)
+        testName = EpicuriousScraper().Extractrecipe_name(self.soup)
         self.assertEqual(actualName, testName, 'Recipe name mismath.\nExpected {}\nGot {}'.format(actualName, testName))
 
-    def test_RecipeIngredients(self):
+    def test_recipe_ingredients(self):
 
         actualIngredients = ['1 (3 1/2–4-lb.) chicken',
                              'Kosher salt',
@@ -33,7 +33,7 @@ class EpicuriousScrapperTestClass(unittest.TestCase):
         self.assertTrue(isinstance(testIngredients, list), 'Ingredients should be a list')
         self.assertEqual(actualIngredients, testIngredients, 'Recipe Ingredient Mismatch')
 
-    def test_RecipeInstructions(self):
+    def test_recipe_instructions(self):
 
         testInstructions = EpicuriousScraper().ExtractInstructions(self.soup)
         self.assertTrue(isinstance(testInstructions, str), 'Recipe Instructions should be a string')

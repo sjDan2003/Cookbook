@@ -814,11 +814,11 @@ window.dataLayer={"version":"1.0","pageInstanceId":"www.eatingwell.com/recipe/25
 
 
 
-<section class="recipeIngredients" ng-controller="ew_controllers_recipe_ingredient" ng-init="init(6, 259531, 'Recipe')">
+<section class="recipe_ingredients" ng-controller="ew_controllers_recipe_ingredient" ng-init="init(6, 259531, 'Recipe')">
 
     <h2 class="headingH2GuttersIngredients">
     Ingredients
-    <span class="recipeIngredientsHeaderToggles">
+    <span class="recipe_ingredientsHeaderToggles">
         <meta id="metaRecipeServings" itemprop="recipeYield" content="6">
 
 
@@ -845,7 +845,7 @@ window.dataLayer={"version":"1.0","pageInstanceId":"www.eatingwell.com/recipe/25
             <input ng-model="servings" type="number" name="servings" data-role="none" id="servings" class="" min="0" max="300" value="6" data-original="6" ng-focus="hideAds()" ng-blur="showAds()"/>
         </div>
         <div class="adjustServingsButton">
-            <a class="btnsOne-small" href="" ng-click="getIngredients(259531,'Recipe', true)" id="btn-adjust">Adjust</a>
+            <a class="btnsOne-small" href="" ng-click="get_ingredients(259531,'Recipe', true)" id="btn-adjust">Adjust</a>
 
         </div>
         <div class="adjustServingsRadioButton">
@@ -962,7 +962,7 @@ window.dataLayer={"version":"1.0","pageInstanceId":"www.eatingwell.com/recipe/25
             </li>
     </ul>
 
-            <ol class="listNumbers recipeDirectionsList" itemprop="recipeInstructions">
+            <ol class="listNumbers recipeDirectionsList" itemprop="recipe_instructions">
                         <li class="step" ng-class="{'finished': stepIsActive0}" ng-click="stepIsActive0 = !stepIsActive0"><span class="recipeDirectionsListItem">Lightly coat waffle baker with cooking spray. Preheat a waffle baker on high (the waffle baker needs to be well heated to avoid sticking). Preheat oven to 200&#176;F. Set a wire rack on a baking sheet; place in oven while it&#39;s preheating.</span></li>
                         <li class="step" ng-class="{'finished': stepIsActive1}" ng-click="stepIsActive1 = !stepIsActive1"><span class="recipeDirectionsListItem">Meanwhile, in a medium bowl combine gluten-free all-purpose flour, whey protein powder, coconut flour, flaxseed meal, sugar, arrowroot, baking powder, the 2 teaspoons cinnamon, the baking soda, and ginger.</span></li>
                         <li class="step" ng-class="{'finished': stepIsActive2}" ng-click="stepIsActive2 = !stepIsActive2"><span class="recipeDirectionsListItem">In a large bowl whisk together almond milk, pumpkin, egg whites, grapeseed oil, and vanilla. Add flour mixture to pumpkin mixture; stir until well mixed. Let stand for 5 to 10 minutes or until batter thickens.</span></li>

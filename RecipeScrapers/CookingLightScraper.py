@@ -13,7 +13,7 @@ class CookingLightScraper(JsonScraper):
         startIndex = rawString.find('},{"@context') + 2
         jsonDict = json.loads(rawString[startIndex:])
         recipeData = {}
-        recipeData['name'] = self.ExtractRecipeName(jsonDict)
+        recipeData['name'] = self.Extractrecipe_name(jsonDict)
         recipeData['recipeIngredient'] = self.ExtractIngredients(jsonDict)
         recipeData['recipeInstructions'] = self.ExtractInstructions(jsonDict)
         return recipeData
