@@ -11,7 +11,7 @@ class KitchenScrapperTestClass(unittest.TestCase):
     def setUpClass(self):
         with open(os.path.join(os.path.dirname(__file__),'testHtml/cooksTest1.html'),'r') as inHtml:
             soup = bs.BeautifulSoup(inHtml.read(), 'lxml')
-            self.recipeData = CooksScraper().ExtractRecipeData(soup)
+            self.recipeData = CooksScraper().extract_recipe_data(soup)
 
     def test_recipe_name(self):
 

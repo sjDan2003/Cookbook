@@ -1,34 +1,54 @@
-import bs4 as bs
 import json
 
-
 class EpicuriousScraper():
+    """This class is responsible for extracting recipe data
+    from epicurious.com
+    """
 
-    def Extractrecipe_name(self, soup):
-        """One of the places where the recipe name is stored on epicurious is
-        in a variable called digital data. This variable stores a dictionary objectn
+    @staticmethod
+    def extract_recipe_name(soup):
+        """Extracts the recipe's name from the soup object
+
+        One of the places where the recipe name is stored on epicurious is
+        in a variable called digital data. This variable stores a dictionary object
         containing not only the recipe name, but other information that could be
         useful in the future.
+
+        Args:
+            soup: Beautiful Soup object containing the recipe data
+
+        Returns:
+            A string with the recipe's name
         """
+
         recipe_name = ''
         for item in soup.find_all('script', type='text/javascript'):
-            searchStr = 'var digitalData = '
-            if searchStr in item.string:
+            search_string = 'var digitalData = '
+            if search_string in item.string:
 
                 # Removing leading and trailing whitespace around the item
-                itemString = item.string.strip()
+                item_string = item.string.strip()
 
                 # Strip the variable name out of the string
-                digitalDataVar = itemString[len(searchStr):(len(itemString) - 1)]
+                digital_data_var = item_string[len(search_string):(len(item_string) - 1)]
 
                 # Convert the string to a dict
-                jsonDigitalData = json.loads(digitalDataVar)
-                recipe_name = jsonDigitalData['display']
+                json_digital_data = json.loads(digital_data_var)
+                recipe_name = json_digital_data['display']
                 break
 
         return recipe_name
 
-    def ExtractIngredients(self, soup):
+    @staticmethod
+    def extract_ingredients(soup):
+        """Extracts the ingredients from the soup object
+
+        Args:
+            soup: Beautiful Soup object containing the recipe data
+
+        Returns:
+            The list of ingredients
+        """
 
         ingredients = []
 
@@ -37,7 +57,16 @@ class EpicuriousScraper():
 
         return ingredients
 
-    def ExtractInstructions(self, soup):
+    @staticmethod
+    def extract_instructions(soup):
+        """Extracts the recipe instructions from the soup object
+
+        Args:
+            soup: Beautiful Soup object containing the recipe data
+
+        Returns:
+            A string with the recipe instructions
+        """
 
         instructions = ''
 
@@ -46,9 +75,19 @@ class EpicuriousScraper():
 
         return instructions
 
-    def ExtractRecipeData(self, soup):
-        recipeData = {}
-        recipeData['name'] = self.Extractrecipe_name(soup)
-        recipeData['recipeIngredient'] = self.ExtractIngredients(soup)
-        recipeData['recipeInstructions'] = self.ExtractInstructions(soup)
-        return recipeData
+    def extract_recipe_data(self, soup):
+        """Manages the collection of all recipe data and returns that
+        data back to the calling function.
+
+        Args:
+            soup: Beautiful Soup object containing the recipe data
+
+        Returns:
+            A dictionary containing all of the relevant recipe data
+        """
+
+        recipe_data = {}
+        recipe_data['name'] = self.extract_recipe_name(soup)
+        recipe_data['recipeIngredient'] = self.extract_ingredients(soup)
+        recipe_data['recipeInstructions'] = self.extract_instructions(soup)
+        return recipe_data

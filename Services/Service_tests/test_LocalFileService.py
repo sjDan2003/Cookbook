@@ -10,57 +10,57 @@ class LocalFileServiceTestClass(unittest.TestCase):
         self.local_file_service = LocalFileServiceClass()
         self.testFileName = '/Cookbook/data/savedRecipes.json'
 
-    def test_ReadJsonFile(self):
+    def test_read_json_file(self):
 
         with patch('builtins.open', new_callable=mock_open()) as mockedOpen:
             with patch('LocalFileService.json.load') as mockedJsonLoad:
 
                 testJsonData = {'Test Key': 'Test Value'}
                 mockedJsonLoad.return_value = testJsonData
-                retJsonData = self.local_file_service.ReadJsonFile(self.testFileName)
+                retJsonData = self.local_file_service.read_json_file(self.testFileName)
                 mockedOpen.assert_called_once_with(self.testFileName)
                 self.assertEqual(retJsonData, testJsonData, 'Mocked data mismatch')
 
-    def test_ReadJsonFile_FileNotFound(self):
+    def test_read_json_file_FileNotFound(self):
 
         with patch('builtins.open', new_callable=mock_open()) as mockedOpen:
 
             testJsonData = {}
             mockedOpen.side_effect = FileNotFoundError()
-            retJsonData = self.local_file_service.ReadJsonFile(self.testFileName)
+            retJsonData = self.local_file_service.read_json_file(self.testFileName)
             mockedOpen.assert_called_once_with(self.testFileName)
             self.assertEqual(retJsonData, testJsonData, 'Read Json Exception should return no data')
 
-    def test_WriteJsonFile(self):
+    def test_write_json_file(self):
 
         with patch('LocalFileService.os.makedirs') as mockedMakeDirs:
             with patch('builtins.open', new_callable=mock_open()) as mockedOpen:
                 testJsonData = {'Test Key': 'Test Value'}
-                self.local_file_service.WriteJsonFile(self.testFileName, testJsonData)
+                self.local_file_service.write_json_file(self.testFileName, testJsonData)
                 mockedOpen.assert_called_once_with(self.testFileName, 'w+')
 
-    def test_GetFileName(self):
+    def test_get_filename(self):
 
-        testFileName = self.local_file_service.GetFileName(self.testFileName)
+        testFileName = self.local_file_service.get_filename(self.testFileName)
         expectedFileName = 'savedRecipes.json'
         self.assertEqual(testFileName, expectedFileName, 'File names do not match')
 
     def test_GetFileName_NoFilename(self):
 
         noFileNamePath = '/home/sjdan2003/Cookbook/data/'
-        retFileName = self.local_file_service.GetFileName(noFileNamePath)
+        retFileName = self.local_file_service.get_filename(noFileNamePath)
         expectedFileName = None
         self.assertEqual(retFileName, expectedFileName, 'File names do not match for no file name')
 
-    def test_GetFileType(self):
+    def test_get_file_type(self):
 
-        testFileType = self.local_file_service.GetFileType(self.testFileName)
+        testFileType = self.local_file_service.get_file_type(self.testFileName)
         expectedFileType = '.json'
         self.assertEqual(testFileType, expectedFileType, 'File types do not match')
 
     def test_GetFilieType_NoFilename(self):
 
         noFileTypePath = '/home/sjdan2003/Cookbook/data/savedRecipes'
-        retFileName = self.local_file_service.GetFileType(noFileTypePath)
+        retFileName = self.local_file_service.get_file_type(noFileTypePath)
         expectedFileType = None
         self.assertEqual(retFileName, expectedFileType, 'File types do not match for no file type')

@@ -11,6 +11,9 @@ from .JsonScraper import JsonScraper
 
 
 class RecipeScraper:
+    """This class determines the best scraper to get the recipe data
+    then connects to the internet to get the recipe information.
+    """
 
     def get_scrapper(self, url):
         """Gets the class pointer to the specific scrapper based on the URL
@@ -67,13 +70,13 @@ class RecipeScraper:
         if raw_html_data != '':
             soup = bs.BeautifulSoup(raw_html_data, 'lxml')
             scrapper = self.get_scrapper(url)
-            extracted_data = scrapper().ExtractRecipeData(soup)
+            extracted_data = scrapper().extract_recipe_data(soup)
             if extracted_data is not None:
                 recipe_data = extracted_data
             else:
                 recipe_data = {}
                 print('Could not find recipe data for {}'.format(url))
-                if type(raw_html_data) is bytes:
+                if isinstance(raw_html_data, bytes):
                     # TODO: Need to find a way to properly decode these sites.
                     # Beautiful Soup will correctly not find the type, but print
                     # the reason why

@@ -4,14 +4,15 @@ import os
 
 class LocalFileServiceClass:
 
-    def WriteJsonFile(self, filename, jsonData):
+    @staticmethod
+    def write_json_file(filename, json_data):
         """Function responsible for writting JSON or Dictionary formatted data
         to a JSON file somewhere on local storage
 
         Args:
             filename: The full file path and filename where
             the data should to be saved
-            jsonData: Dictionary formatted data to be saved
+            json_data: Dictionary formatted data to be saved
 
         Returns:
             None
@@ -20,10 +21,11 @@ class LocalFileServiceClass:
         # Make sure the folder(s) exist before trying to save the file
         os.makedirs(os.path.dirname(filename), exist_ok=True)
 
-        with open(filename, 'w+') as writeFilePtr:
-            json.dump(jsonData, writeFilePtr)
+        with open(filename, 'w+') as write_file_ptr:
+            json.dump(json_data, write_file_ptr)
 
-    def ReadJsonFile(self, filename):
+    @staticmethod
+    def read_json_file(filename):
         """Reads JSON formatted data into a dictionary object
 
         Args:
@@ -33,21 +35,22 @@ class LocalFileServiceClass:
             A dictionary object of the file's contents
         """
 
-        returnJsonData = {}
+        return_json_data = {}
         try:
-            with open(filename) as readFilePtr:
-                returnJsonData = json.load(readFilePtr)
-        except FileNotFoundError as fileError:
+            with open(filename) as read_file_ptr:
+                return_json_data = json.load(read_file_ptr)
+        except FileNotFoundError:
             print('File not found')
 
-        return returnJsonData
+        return return_json_data
 
-    def GetFileName(self, filePath):
+    @staticmethod
+    def get_filename(file_path):
         """Gets the file name of the file being uploaded
         or downloaded
 
         Args:
-            filePath: The full file path to get the file name for
+            file_path: The full file path to get the file name for
 
         Returns:
             If the file path contains a valid filename, then
@@ -56,28 +59,29 @@ class LocalFileServiceClass:
             None is returned.
         """
 
-        fileName = os.path.split(filePath)[1]
+        file_name = os.path.split(file_path)[1]
 
-        if fileName is not '':
-            return fileName
-        else:
-            return None
+        if file_name is '':
+            file_name = None
 
-    def GetFileType(self, filePath):
+        return file_name
+
+    @staticmethod
+    def get_file_type(file_path):
         """Gets the file type from the file being uploaded
         or downloaded to the user's Google Drive Account
 
         Args:
-            filePath: The file to get the file type for
+        file_path: The file to get the file type for
 
         Returns:
             If the file has a file type, that file type is returned
             Else, this function returns None
         """
 
-        fileType = os.path.splitext(filePath)[1]
+        file_type = os.path.splitext(file_path)[1]
 
-        if fileType is not '':
-            return fileType
-        else:
-            return None
+        if file_type is '':
+            file_type = None
+
+        return file_type

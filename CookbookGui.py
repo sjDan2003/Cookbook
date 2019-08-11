@@ -92,7 +92,7 @@ class RecipeSaveScreen(Screen):
 
         saveable_list = self.create_saveable_list(self.manager.get_screen('recipe view').recipeList.data)
         local_file_service = LocalFileServiceClass()
-        local_file_service.WriteJsonFile(self.local_recipe_json, saveable_list)
+        local_file_service.write_json_file(self.local_recipe_json, saveable_list)
 
         self.manager.transition.direction = 'right'
         self.manager.current = 'recipe view'
@@ -103,7 +103,7 @@ class RecipeSaveScreen(Screen):
         """
 
         local_file_service = LocalFileServiceClass()
-        loaded_recipe_data = local_file_service.ReadJsonFile(self.local_recipe_json)
+        loaded_recipe_data = local_file_service.read_json_file(self.local_recipe_json)
 
         self.load_recipe_data_to_recycle_view(loaded_recipe_data)
         self.manager.transition.direction = 'right'
@@ -117,32 +117,32 @@ class RecipeSaveScreen(Screen):
 
         cloud_service = GoogleDriveClass()
 
-        filename = cloud_service.GetFileName(self.local_recipe_json)
+        filename = cloud_service.get_filename(self.local_recipe_json)
         print(filename)
 
-        if cloud_service.DoesFileExist(filename):
+        if cloud_service.does_file_exist(filename):
 
             print('Updating file')
-            file_id = cloud_service.GetFileIdFromFilename(filename)
-            cloud_service.UpdateFile(file_id, self.local_recipe_json)
+            file_id = cloud_service.get_file_id_from_filename(filename)
+            cloud_service.update_file(file_id, self.local_recipe_json)
 
         else:
 
             print('Uploading new file')
             cloud_service.upload_file(self.local_recipe_json)
 
-        cloud_service.PrintFileList()
+        cloud_service.print_file_list()
 
     def load_from_google_drive(self):
         """Loads recipe data using Google Drive as the source"""
 
         cloud_service = GoogleDriveClass()
-        filename = cloud_service.GetFileName(self.local_recipe_json)
+        filename = cloud_service.get_filename(self.local_recipe_json)
 
-        if cloud_service.DoesFileExist(filename):
+        if cloud_service.does_file_exist(filename):
 
-            file_id = cloud_service.GetFileIdFromFilename(filename)
-            recipe_data = cloud_service.DownloadFile(file_id)
+            file_id = cloud_service.get_file_id_from_filename(filename)
+            recipe_data = cloud_service.download_file(file_id)
             loaded_recipe_data = json.loads(recipe_data)
 
             self.load_recipe_data_to_recycle_view(loaded_recipe_data)

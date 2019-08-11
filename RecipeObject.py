@@ -2,6 +2,9 @@ from RecipeScrapers import RecipeScraper
 
 
 class RecipeObjectClass():
+    """This class manages all of the recipe data for each
+    recipe
+    """
 
     def __init__(self, recipe_object=None):
 

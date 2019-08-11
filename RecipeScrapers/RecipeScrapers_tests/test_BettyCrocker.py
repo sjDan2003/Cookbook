@@ -11,7 +11,7 @@ class BettyCrockerScrapperTestClass(unittest.TestCase):
     def setUpClass(self):
         with open(os.path.join(os.path.dirname(__file__),'testHtml/bettyCrockerTest1.html'),'r') as inHtml:
             soup = bs.BeautifulSoup(inHtml.read(), 'lxml')
-            self.recipeData = BettyCrockerScraper().ExtractRecipeData(soup)
+            self.recipeData = BettyCrockerScraper().extract_recipe_data(soup)
 
     def test_recipe_name(self):
 

@@ -14,7 +14,7 @@ class EpicuriousScrapperTestClass(unittest.TestCase):
 
     def test_recipe_name(self):
         actualName = 'Slow-Roasted Chicken with Honey-Glazed Carrots and Ginger'
-        testName = EpicuriousScraper().Extractrecipe_name(self.soup)
+        testName = EpicuriousScraper().extract_recipe_name(self.soup)
         self.assertEqual(actualName, testName, 'Recipe name mismath.\nExpected {}\nGot {}'.format(actualName, testName))
 
     def test_recipe_ingredients(self):
@@ -29,11 +29,11 @@ class EpicuriousScrapperTestClass(unittest.TestCase):
                              '2 Tbsp. extra-virgin olive oil',
                              '1 tsp. crushed red pepper flakes',
                              '1/4 cup fresh lime juice']
-        testIngredients = EpicuriousScraper().ExtractIngredients(self.soup)
+        testIngredients = EpicuriousScraper().extract_ingredients(self.soup)
         self.assertTrue(isinstance(testIngredients, list), 'Ingredients should be a list')
         self.assertEqual(actualIngredients, testIngredients, 'Recipe Ingredient Mismatch')
 
     def test_recipe_instructions(self):
 
-        testInstructions = EpicuriousScraper().ExtractInstructions(self.soup)
+        testInstructions = EpicuriousScraper().extract_instructions(self.soup)
         self.assertTrue(isinstance(testInstructions, str), 'Recipe Instructions should be a string')
