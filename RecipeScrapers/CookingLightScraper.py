@@ -1,28 +1,25 @@
 import json
-from .JsonScraper import JsonScraper
+from .AllRecipeScraper import AllRecipesScraper
 
-class CookingLightScraper(JsonScraper):
+class CookingLightScraper(AllRecipesScraper):
     """This class is responsible for extracting recipe data
     from cookinglight.com
     """
 
-    def extract_recipe_data(self, soup):
-        """CookingLight uses the JSON format, but there are multiple JSONs in
-        each HTML. Pull the second one and use the JSON library to load it.
+    @staticmethod
+    def extract_instructions(recipe_dict):
+        """Extracts the recipe instructions from the recipe dictionary
 
         Args:
-            soup: Beautiful Soup object containing the recipe data
+            recipe_dict: Dictionary object containing the entire recipe
 
         Returns:
-            A dictionary containing all of the relevant recipe data
+            A string with the recipe instructions
         """
 
-        recipe_data_json = soup.find('script', type='application/ld+json')
-        raw_string = recipe_data_json.string.strip()[1:-1]
-        start_index = raw_string.find('},{"@context') + 2
-        json_dict = json.loads(raw_string[start_index:])
-        recipe_data = {}
-        recipe_data['name'] = self.extract_recipe_name(json_dict)
-        recipe_data['recipeIngredient'] = self.extract_ingredients(json_dict)
-        recipe_data['recipeInstructions'] = self.extract_instructions(json_dict)
-        return recipe_data
+        instructions = ''
+
+        if 'recipeInstructions' in recipe_dict:
+            instructions = recipe_dict['recipeInstructions']
+
+        return instructions

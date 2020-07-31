@@ -1,0 +1,9 @@
+{% extends "RecipeViewer/base.html" %}
+
+{% block title %}{{ recipe.name }}{% endblock %}
+
+{% block content%}
+    <h1>{{ recipe.name }}</h1>
+    <p>{{ recipe.ingredients|linebreaks }}</p>
+    <p>{{ recipe.instructions|linebreaks }}</p>
+{% endblock content%}

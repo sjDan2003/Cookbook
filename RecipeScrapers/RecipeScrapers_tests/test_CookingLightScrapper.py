@@ -32,9 +32,12 @@ class CookingLightScrapperTestClass(unittest.TestCase):
                              '1 teaspoon vanilla extract',
                              '1  large egg, lightly beaten',
                              '1 1/3 cups fresh raspberries']
+        actualIngredientsStr = ''
+        for recipe_instruction_item in actualIngredients:
+            actualIngredientsStr += '{}\n'.format(recipe_instruction_item.strip())
         testIngredients = self.recipeData['recipeIngredient']
-        self.assertTrue(isinstance(testIngredients, list), 'Ingredients should be a list')
-        self.assertEqual(actualIngredients, testIngredients, 'Recipe Ingredient Mismatch')
+        self.assertTrue(isinstance(testIngredients, str), 'Ingredients should be a list')
+        self.assertEqual(actualIngredientsStr, testIngredients, 'Recipe Ingredient Mismatch')
 
     def test_recipe_instructions(self):
 

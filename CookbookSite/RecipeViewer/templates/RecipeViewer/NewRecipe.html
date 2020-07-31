@@ -1,0 +1,13 @@
+{% extends "RecipeViewer/base.html" %}
+
+{% block title %}Import New{% endblock %}
+
+{% block content %}
+    <form method="post">
+        <fieldset class="form-group">
+            {% csrf_token %}
+            {{ form }}
+        </fieldset>
+        <input type="submit" value="Submit">
+    </form>
+{% endblock %}

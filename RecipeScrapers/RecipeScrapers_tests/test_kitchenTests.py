@@ -9,34 +9,78 @@ class KitchenScrapperTestClass(unittest.TestCase):
 
     @classmethod
     def setUpClass(self):
+        self.recipeData = ''
+
+    def read_recipe_data(self):
+        """
+            Helper function to read the actual recipe from a test HTML file
+            This function will open the file, creat a soup object from it
+            and call the recipe scraper to extract the data.
+        """
+
         with open(os.path.join(os.path.dirname(__file__),'testHtml/thekitchnTest1.html'),'r') as inHtml:
             soup = bs.BeautifulSoup(inHtml.read(), 'lxml')
             self.recipeData = TheKitchnScraper().extract_recipe_data(soup)
 
-    def test_recipe_name(self):
+    def read_empty_recipe_data(self):
+        """
+            Helper function to parse an empty HTML string
+            This will be used to test the case where recipe data
+            is not found.
+        """
 
-        actualName = 'Carrot Soup'
+        soup = bs.BeautifulSoup("<html></html>", 'lxml')
+        self.recipeData = TheKitchnScraper().extract_recipe_data(soup)
+
+    def test_recipe_name_get_correct_name(self):
+
+        self.read_recipe_data()
+        actualName = 'How To Make the Easiest Pasta Salad'
         testName = self.recipeData['name']
         self.assertEqual(actualName, testName, 'Recipe name mismath.\nExpected {}\nGot {}'.format(actualName, testName))
 
-    def test_recipe_ingredients(self):
+    def test_recipe_name_name_not_found(self):
 
-        actualIngredients = ['2 tablespoons olive or coconut oil',
-                             '1 small yellow onion, chopped',
-                             '2 tablespoons red curry paste',
-                             '1 (1-inch) piece fresh ginger, peeled and thinly sliced (about 2 tablespoons)',
-                             '1 pound carrots (about 8 medium), peeled and coarsely chopped',
-                             '1 (14 to 15-ounce) can light coconut milk',
-                             '1 1/2 cups low-sodium vegetable broth',
-                             '1/4 cup creamy natural peanut or almond butter (such as Trader Joe’s Creamy Unsalted Almond Butter)',
-                             'Kosher salt',
-                             'Freshly ground black pepper',
-                             'For serving: chopped fresh cilantro leaves and tender stems, chopped roasted peanuts, and lime wedges']
+        actualName = ''
+        self.read_empty_recipe_data()
+        testName = self.recipeData['name']
+        self.assertEqual(actualName, testName, 'Recipe name mismath.\nExpected {}\nGot {}'.format(actualName, testName))
+
+    def test_recipe_ingredients_gets_correct_ingredients(self):
+
+        self.read_recipe_data()
+        actualIngredients = ['1/2 cup olive oil',
+                             '1/4 cup red wine vinegar',
+                             '2 teaspoons dried Italian seasoning',
+                             '1/2 teaspoon granulated sugar',
+                             '1 clove garlic, minced',
+                             '1/2 teaspoon kosher salt',
+                             '1/4 teaspoon freshly ground black pepper',
+                             '1/2 medium red onion, finely chopped',
+                             '8 ounces dried short pasta, such as rotini',
+                             '8 ounces cherry tomatoes, halved or quartered',
+                             '1 small English cucumber, quartered lengthwise, then thinly sliced crosswise',
+                             '4 ounces mini mozzarella balls, drained and halved',
+                             '4 ounces salami slices, cut into 1/2-inch-wide strips',
+                             '1/2 cup pitted kalamata olives, halved',
+                             '1/4 cup coarsely chopped fresh parsley leaves']
+        actualIngredientsStr = ''
+        for recipe_instruction_item in actualIngredients:
+            actualIngredientsStr += '{}\n'.format(recipe_instruction_item.strip())
         testIngredients = self.recipeData['recipeIngredient']
-        self.assertTrue(isinstance(testIngredients, list), 'Ingredients should be a list')
-        self.assertEqual(actualIngredients, testIngredients, 'Recipe Ingredient Mismatch')
+        self.assertTrue(isinstance(testIngredients, str), 'Ingredients should be a list')
+        self.assertEqual(actualIngredientsStr, testIngredients, 'Recipe Ingredient Mismatch')
+
+    def test_recipe_ingredients_ingredients_not_found(self):
+
+        self.read_empty_recipe_data()
+        actualIngredientsStr = ''
+        testIngredients = self.recipeData['recipeIngredient']
+        self.assertTrue(isinstance(testIngredients, str), 'Ingredients should be a string')
+        self.assertEqual(actualIngredientsStr, testIngredients, 'Recipe Ingredient Mismatch')
 
     def test_recipe_instructions(self):
 
+        self.read_recipe_data()
         testInstructions = self.recipeData['recipeInstructions']
         self.assertTrue(isinstance(testInstructions, str), 'Recipe Instructions should be a string')

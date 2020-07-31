@@ -43,7 +43,7 @@ class RecipeScraper:
         elif 'bettycrocker' in url:
             return_scraper = BettyCrockerScraper
         elif 'eatingwell' in url:
-            return_scraper = EatingWellScraper
+            return_scraper = AllRecipesScraper
         elif 'cooks' in url:
             return_scraper = CooksScraper
         else:
@@ -104,7 +104,7 @@ class RecipeScraper:
         # Rather than using the default header and retrying on a 403, just send
         # the custom header initially.
         request_headers = {}
-        request_headers['User-Agent'] = 'Chrome Browser'
+        request_headers['User-Agent'] = 'Mozilla/5.0'
         source = ''
         status_code = 0
 

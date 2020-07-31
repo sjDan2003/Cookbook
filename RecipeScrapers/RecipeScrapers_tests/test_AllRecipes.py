@@ -1,10 +1,11 @@
 import unittest
 import bs4 as bs
 import os
-from RecipeScrapers import JsonScraper
+from .TestHelpers import read_recipe_data, read_empty_recipe_data
+from RecipeScrapers import AllRecipesScraper
 
 
-class JsonScrapperScrapperTestClass(unittest.TestCase):
+class AllRecipesScrapperTestClass(unittest.TestCase):
 
 
     @classmethod
@@ -18,9 +19,9 @@ class JsonScrapperScrapperTestClass(unittest.TestCase):
             and call the recipe scraper to extract the data.
         """
 
-        with open(os.path.join(os.path.dirname(__file__),'testHtml/foodNetworkTest1.html'),'r') as inHtml:
+        with open(os.path.join(os.path.dirname(__file__),'testHtml/allrecipesTest1.html'),'r') as inHtml:
             soup = bs.BeautifulSoup(inHtml.read(), 'lxml')
-            self.recipeData = JsonScraper().extract_recipe_data(soup)
+            self.recipeData = AllRecipesScraper().extract_recipe_data(soup)
 
     def read_empty_recipe_data(self):
         """
@@ -30,12 +31,12 @@ class JsonScrapperScrapperTestClass(unittest.TestCase):
         """
 
         soup = bs.BeautifulSoup("<html></html>", 'lxml')
-        self.recipeData = JsonScraper().extract_recipe_data(soup)
+        self.recipeData = AllRecipesScraper().extract_recipe_data(soup)
 
     def test_recipe_name_get_correct_name(self):
 
         self.read_recipe_data()
-        actualName = 'Perfect Turkey Burgers'
+        actualName = 'Janet\'s Rich Banana Bread'
         testName = self.recipeData['name']
         self.assertEqual(actualName, testName, 'Recipe name mismath.\nExpected {}\nGot {}'.format(actualName, testName))
 
@@ -46,24 +47,25 @@ class JsonScrapperScrapperTestClass(unittest.TestCase):
         testName = self.recipeData['name']
         self.assertEqual(actualName, testName, 'Recipe name mismath.\nExpected {}\nGot {}'.format(actualName, testName))
 
-    def test_recipe_ingredients(self):
+    def test_recipe_ingredients_gets_correct_ingredients(self):
 
         self.read_recipe_data()
-        actualIngredients = ['1 large portobello mushroom cap',
-                             '1 tablespoon coarsely chopped shallot',
-                             '3 tablespoons lightly packed fresh parsley',
-                             '1 1/4 pounds 85% to 93% lean ground turkey',
-                             '2 tablespoons extra-virgin olive oil, plus more for brushing',
-                             '1 teaspoon Worcestershire sauce',
-                             'Kosher salt and freshly ground pepper',
-                             '8 thin slices manchego or white cheddar cheese',
-                             '4 English muffins, split',
-                             'Dijon mustard, mayonnaise and sliced avocado, for topping']
+        actualIngredients = ["½ cup butter, melted",
+                             "1 cup white sugar",
+                             "2   eggs",
+                             "1 teaspoon vanilla extract",
+                             "1 ½ cups all-purpose flour",
+                             "1 teaspoon baking soda",
+                             "½ teaspoon salt",
+                             "½ cup sour cream",
+                             "½ cup chopped walnuts",
+                             "2   medium bananas, sliced"
+                            ]
         actualIngredientsStr = ''
         for recipe_instruction_item in actualIngredients:
             actualIngredientsStr += '{}\n'.format(recipe_instruction_item.strip())
         testIngredients = self.recipeData['recipeIngredient']
-        self.assertTrue(isinstance(testIngredients, str), 'Ingredients should be a list')
+        self.assertTrue(isinstance(testIngredients, str), 'Ingredients should be a string')
         self.assertEqual(actualIngredientsStr, testIngredients, 'Recipe Ingredient Mismatch')
 
     def test_recipe_ingredients_ingredients_not_found(self):
