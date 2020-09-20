@@ -35,16 +35,16 @@ class KitchenScrapperTestClass(unittest.TestCase):
     def test_recipe_name_get_correct_name(self):
 
         self.read_recipe_data()
-        actualName = 'How To Make the Easiest Pasta Salad'
-        testName = self.recipeData['name']
-        self.assertEqual(actualName, testName, 'Recipe name mismath.\nExpected {}\nGot {}'.format(actualName, testName))
+        actual_name = 'How To Make the Easiest Pasta Salad'
+        test_name = self.recipeData['name']
+        self.assertEqual(actual_name, test_name, 'Recipe name mismath.\nExpected {}\nGot {}'.format(actual_name, test_name))
 
     def test_recipe_name_name_not_found(self):
 
-        actualName = ''
+        actual_name = ''
         self.read_empty_recipe_data()
-        testName = self.recipeData['name']
-        self.assertEqual(actualName, testName, 'Recipe name mismath.\nExpected {}\nGot {}'.format(actualName, testName))
+        test_name = self.recipeData['name']
+        self.assertEqual(actual_name, test_name, 'Recipe name mismath.\nExpected {}\nGot {}'.format(actual_name, test_name))
 
     def test_recipe_ingredients_gets_correct_ingredients(self):
 
@@ -64,20 +64,20 @@ class KitchenScrapperTestClass(unittest.TestCase):
                              '4 ounces salami slices, cut into 1/2-inch-wide strips',
                              '1/2 cup pitted kalamata olives, halved',
                              '1/4 cup coarsely chopped fresh parsley leaves']
-        actualIngredientsStr = ''
+        actual_ingredients_str = ''
         for recipe_instruction_item in actualIngredients:
-            actualIngredientsStr += '{}\n'.format(recipe_instruction_item.strip())
-        testIngredients = self.recipeData['recipeIngredient']
-        self.assertTrue(isinstance(testIngredients, str), 'Ingredients should be a list')
-        self.assertEqual(actualIngredientsStr, testIngredients, 'Recipe Ingredient Mismatch')
+            actual_ingredients_str += '{}\n'.format(recipe_instruction_item.strip())
+        test_ingredients = self.recipeData['recipeIngredient']
+        self.assertTrue(isinstance(test_ingredients, str), 'Ingredients should be a list')
+        self.assertEqual(actual_ingredients_str, test_ingredients, 'Recipe Ingredient Mismatch')
 
     def test_recipe_ingredients_ingredients_not_found(self):
 
         self.read_empty_recipe_data()
-        actualIngredientsStr = ''
-        testIngredients = self.recipeData['recipeIngredient']
-        self.assertTrue(isinstance(testIngredients, str), 'Ingredients should be a string')
-        self.assertEqual(actualIngredientsStr, testIngredients, 'Recipe Ingredient Mismatch')
+        actual_ingredients_str = ''
+        test_ingredients = self.recipeData['recipeIngredient']
+        self.assertTrue(isinstance(test_ingredients, str), 'Ingredients should be a string')
+        self.assertEqual(actual_ingredients_str, test_ingredients, 'Recipe Ingredient Mismatch')
 
     def test_recipe_instructions(self):
 

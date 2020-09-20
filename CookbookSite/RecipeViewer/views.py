@@ -11,11 +11,17 @@ path.append('..')
 from RecipeScrapers import RecipeScraper
 
 class RecipeListView(ListView):
+    """Class based view to manage viewing all the
+       recipes on a single page
+    """
+
     model = Recipe
     template_name = 'RecipeViewer/home.html'
     context_object_name = 'recipes'
 
 class RecipeDetailView(DetailView):
+    """Class based view to display
+    """
     model = Recipe
     template_name = 'RecipeViewer/recipe_detail.html'
     context_object_name = 'recipe'
@@ -28,9 +34,15 @@ class RecipeCreateView(CreateView):
 class RecipeUpdateView(UpdateView):
     model = Recipe
     fields = ['name', 'ingredients', 'instructions']
-    template_name = 'RecipeViewer/recipe_create.html'
+    template_name = 'RecipeViewer/recipe_update.html'
 
-def NewRecipeView(request):
+class RecipeDeleteView(DeleteView):
+    model = Recipe
+    template_name = 'RecipeViewer/recipe_delete.html'
+    context_object_name = 'recipe'
+    success_url = '/'
+
+def new_recipe_view(request):
 
     if request.method == 'POST':
         form = NewRecipeForm(request.POST)
@@ -38,17 +50,15 @@ def NewRecipeView(request):
             data, status_code = RecipeScraper().scrape_recipe_data(form.cleaned_data['recipe_url'])
             print(status_code)
             if status_code == 200:
-                # new_recipe = Recipe()
-                # new_recipe.name = data['name']
-                # new_recipe.ingredients = '\n'.join(data['recipeIngredient'])
-                print(data['name'])
-                print(data['recipeIngredient'])
-                print(data['recipeInstructions'])
+                new_recipe = Recipe()
+                # print(data['name'])
+                # print(data['recipeIngredient'])
+                # print(data['recipeInstructions'])
                 # print(data['image'])
-                # new_recipe.name = data['name']
-                # new_recipe.ingredients = data['recipeIngredient']
-                # new_recipe.instructions = data['recipeInstructions']
-                # new_recipe.save()
+                new_recipe.name = data['name']
+                new_recipe.ingredients = data['recipeIngredient']
+                new_recipe.instructions = data['recipeInstructions']
+                new_recipe.save()
                 # print(new_recipe.pk)
             return HttpResponseRedirect(reverse('index'))
 

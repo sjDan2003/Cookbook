@@ -1,0 +1,15 @@
+{% extends "RecipeViewer/base.html" %}
+
+{% block title %}Update Recipe{% endblock %}
+
+{% block content%}
+    <div>
+        <form method="POST">
+            <fieldset class="form-group">
+                {% csrf_token %}
+                {{ form.as_p }}
+            </fieldset>
+            <button type="submit">Update</button>
+        </form>
+    </div>
+{% endblock content%}

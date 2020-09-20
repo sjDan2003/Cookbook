@@ -1,21 +1,21 @@
 import unittest
 import bs4 as bs
 import os
-from RecipeScrapers import EatingWellScraper
+from RecipeScrapers import AllRecipesScraper
 
 
-class KitchenScrapperTestClass(unittest.TestCase):
+class EatingWellScrapperTestClass(unittest.TestCase):
 
 
     @classmethod
     def setUpClass(self):
         with open(os.path.join(os.path.dirname(__file__),'testHtml/eatingWellTest1.html'),'r') as inHtml:
             soup = bs.BeautifulSoup(inHtml.read(), 'lxml')
-            self.recipeData = EatingWellScraper().extract_recipe_data(soup)
+            self.recipeData = AllRecipesScraper().extract_recipe_data(soup)
 
     def test_recipe_name(self):
 
-        actualName = 'Gluten-Free Pumpkin Waffles Recipe'
+        actualName = 'Walnut Pesto Pasta Salad'
         testName = self.recipeData['name']
         self.assertEqual(actualName, testName, 'Recipe name mismath.\nExpected {}\nGot {}'.format(actualName, testName))
 

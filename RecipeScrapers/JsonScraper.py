@@ -104,7 +104,15 @@ class JsonScraper():
         image_url = ''
 
         if 'image' in recipe_dict:
-            image_url = recipe_dict['image']['url']
+
+            image_data = recipe_dict['image']
+
+            if 'url' in image_data:
+                image_url = image_data['url']
+            elif isinstance(image_data, list):
+                image_url = image_data[-1]
+            else:
+                print("Unknown Json image data format")
 
         return image_url
 
@@ -120,21 +128,28 @@ class JsonScraper():
         """
 
         recipe_data = {}
+        recipe_data['name'] = ''
+        recipe_data['recipeInstructions'] = ''
+        recipe_data['recipeIngredient'] = ''
+        recipe_data['image'] = ''
 
-        recipe_data_json = soup.find('script', type='application/ld+json')
-        if recipe_data_json != None:
-            json_dict = json.loads(recipe_data_json.string)
-            if isinstance(json_dict, list):
-                json_dict = json_dict[0]
+        # Find all scripts that would contain recipe data
+        # Some sites have only one, while others have data spead over multiple scripts
+        recipe_data_json_list = soup.find_all('script', type='application/ld+json')
 
-            recipe_data['name'] = self.extract_recipe_name(json_dict)
-            recipe_data['recipeIngredient'] = self.extract_ingredients(json_dict)
-            recipe_data['recipeInstructions'] = self.extract_instructions(json_dict)
-            recipe_data['image'] = self.extract_recipe_image_url(json_dict)
+        if recipe_data_json_list != None:
 
-        else:
-            recipe_data['name'] = ''
-            recipe_data['recipeInstructions'] = ''
-            recipe_data['recipeIngredient'] = ''
-            recipe_data['image'] = ''
+            # Loop over all lists, picking data from each one
+            for recipe_data_json in recipe_data_json_list:
+
+                json_dict = json.loads(recipe_data_json.string)
+                if isinstance(json_dict, list):
+                    json_dict = json_dict[0]
+
+                # TODO: Need to detect if two scripts have the same tags but different information
+                recipe_data['name'] = self.extract_recipe_name(json_dict)
+                recipe_data['recipeIngredient'] = self.extract_ingredients(json_dict)
+                recipe_data['recipeInstructions'] = self.extract_instructions(json_dict)
+                recipe_data['image'] = self.extract_recipe_image_url(json_dict)
+
         return recipe_data
