@@ -5,6 +5,7 @@ class Recipe(models.Model):
     name = models.CharField(max_length=50)
     ingredients = models.TextField()
     instructions = models.TextField()
+    image = models.ImageField(upload_to='RecipeImages/', default='RecipeImages/default.jpeg')
 
     def __str__(self):
         return self.name
@@ -19,5 +20,3 @@ class Recipe(models.Model):
 
     def get_absolute_url(self):
         return reverse('recipe-detail', kwargs={'pk':self.pk})
-
-
