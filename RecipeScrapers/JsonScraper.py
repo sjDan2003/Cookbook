@@ -137,7 +137,7 @@ class JsonScraper():
         # Some sites have only one, while others have data spead over multiple scripts
         recipe_data_json_list = soup.find_all('script', type='application/ld+json')
 
-        if recipe_data_json_list != None:
+        if recipe_data_json_list is not None:
 
             # Loop over all lists, picking data from each one
             for recipe_data_json in recipe_data_json_list:

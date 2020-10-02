@@ -37,7 +37,7 @@ class BettyCrockerScraper():
 
             for child in instuction.contents:
 
-                if child.string != None:
+                if child.string is not None:
                     instructions += '{}\n'.format(child.string.strip())
 
         return instructions
@@ -54,7 +54,7 @@ class BettyCrockerScraper():
         """
         recipe_name = ''
         recipe_tag = soup.find('h1', class_="recipePartTitleText")
-        if recipe_tag != None:
+        if recipe_tag is not None:
             recipe_name = recipe_tag.string
         return recipe_name
 
@@ -73,7 +73,7 @@ class BettyCrockerScraper():
 
         image_url = ''
         image_tag = soup.find('meta', property="og:image")
-        if image_tag != None:
+        if image_tag is not None:
             image_url = image_tag.get('content')
         return image_url
 
