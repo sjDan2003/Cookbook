@@ -8,8 +8,6 @@
     <p>{{ recipe.ingredients|linebreaks }}</p>
     <p>{{ recipe.instructions|linebreaks }}</p>
 
-
-
     <a class="btn btn-secondary" href="{% url 'recipe-update' recipe.id %}">Update</a>
     <a class="btn btn-danger" href="{% url 'recipe-delete' recipe.id %}">Delete</a>
 

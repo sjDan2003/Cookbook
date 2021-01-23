@@ -2,6 +2,9 @@ from django.db import models
 from django.urls import reverse
 
 class Recipe(models.Model):
+    """ The model containing the data and handling of
+        recipe data.
+    """
     name = models.CharField(max_length=50)
     ingredients = models.TextField()
     instructions = models.TextField()
