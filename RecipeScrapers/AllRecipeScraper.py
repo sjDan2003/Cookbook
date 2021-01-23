@@ -98,7 +98,7 @@ class AllRecipesScraper():
         recipe_data = {}
 
         recipe_data_json = soup.find('script', type='application/ld+json')
-        if recipe_data_json != None:
+        if recipe_data_json is not None:
             for item in recipe_data_json:
                 json_dict = json.loads(item.string)
                 for json_item in json_dict:
