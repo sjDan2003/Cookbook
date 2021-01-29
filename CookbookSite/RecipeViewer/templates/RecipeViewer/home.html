@@ -3,7 +3,17 @@
 {% block title %}Home{% endblock %}
 
 {% block content%}
+<div class="row">
+
   {% for recipe in recipes %}
-      <h2><a href="{% url 'recipe-detail' recipe.id %}">{{ recipe.name }}</a></h2>
+    <div class="col-md-4">
+      <div class="card mb-4 box-shadow">
+        <img class="card-img-top" src="{{recipe.image.url}}" class="w-50 h-50" alt="Card image cap">
+        <div class="card-body">
+          <p class="card-text"><a href="{% url 'recipe-detail' recipe.id %}">{{ recipe.name }}</a></p>
+        </div>
+      </div>
+    </div>
   {% endfor %}
+</div>
 {% endblock content%}

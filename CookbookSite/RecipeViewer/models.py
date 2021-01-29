@@ -9,6 +9,7 @@ class Recipe(models.Model):
     ingredients = models.TextField()
     instructions = models.TextField()
     image = models.ImageField(upload_to='RecipeImages/', default='RecipeImages/default.jpeg')
+    url = models.TextField(default='')
 
     def __str__(self):
         return self.name

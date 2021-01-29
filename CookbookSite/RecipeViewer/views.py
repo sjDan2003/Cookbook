@@ -93,6 +93,7 @@ def new_recipe_view(request):
                 new_recipe.name = data['name']
                 new_recipe.ingredients = data['recipeIngredient']
                 new_recipe.instructions = data['recipeInstructions']
+                new_recipe.url = form.cleaned_data['recipe_url']
 
                 if data['image'] is not '':
 
