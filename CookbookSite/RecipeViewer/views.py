@@ -1,5 +1,4 @@
 from sys import path
-import urllib.request
 from os.path import basename
 
 from django.shortcuts import render
@@ -87,25 +86,26 @@ def new_recipe_view(request):
         form = NewRecipeForm(request.POST)
         if form.is_valid():
             data, status_code = RecipeScraper().scrape_recipe_data(form.cleaned_data['recipe_url'])
-            if status_code == 200:
+            print("{}", data)
+            # if status_code == 200:
 
-                new_recipe = Recipe()
-                new_recipe.name = data['name']
-                new_recipe.ingredients = data['recipeIngredient']
-                new_recipe.instructions = data['recipeInstructions']
-                new_recipe.url = form.cleaned_data['recipe_url']
+            #     new_recipe = Recipe()
+            #     new_recipe.name = data['name']
+            #     new_recipe.ingredients = data['recipeIngredient']
+            #     new_recipe.instructions = data['recipeInstructions']
+            #     new_recipe.url = form.cleaned_data['recipe_url']
 
-                if data['image'] is not '':
+            #     if data['image'] is not '':
 
-                    img_data, status_code = RecipeScraper().get_html_data(data['image'])
-                    img_temp = NamedTemporaryFile(delete = True)
-                    img_temp.write(img_data)
-                    img_temp.flush()
+            #         img_data, status_code = RecipeScraper().get_html_data(data['image'])
+            #         img_temp = NamedTemporaryFile(delete=True)
+            #         img_temp.write(img_data)
+            #         img_temp.flush()
 
-                    new_recipe.image.save('image_{}'.format(basename(data['image'])),
-                                            File(img_temp))
+            #         new_recipe.image.save('image_{}'.format(basename(data['image'])),
+            #                                                 File(img_temp))
 
-                new_recipe.save()
+            #     new_recipe.save()
                 # print(new_recipe.pk)
             return HttpResponseRedirect(reverse('index'))
 

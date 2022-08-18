@@ -4,7 +4,7 @@ import os
 from RecipeScrapers import JsonScraper
 
 
-class JsonScrapperScrapperTestClass(unittest.TestCase):
+class FoodNetworkScrapperTestClass(unittest.TestCase):
 
 
     @classmethod
@@ -18,7 +18,7 @@ class JsonScrapperScrapperTestClass(unittest.TestCase):
             and call the recipe scraper to extract the data.
         """
 
-        with open(os.path.join(os.path.dirname(__file__),'testHtml/test_JsonTest2.html'), 'r') as in_html:
+        with open(os.path.join(os.path.dirname(__file__),'testHtml/foodNetworkTest1.html'), 'r') as in_html:
             soup = bs.BeautifulSoup(in_html.read(), 'lxml')
             self.recipeData = JsonScraper().extract_recipe_data(soup)
 
@@ -35,7 +35,7 @@ class JsonScrapperScrapperTestClass(unittest.TestCase):
     def test_recipe_name_get_correct_name(self):
 
         self.read_recipe_data()
-        actualName = 'Pork Tenderloin Rub'
+        actualName = 'Perfect Turkey Burgers'
         testName = self.recipeData['name']
         self.assertEqual(actualName, testName, 'Recipe name mismath.\nExpected {}\nGot {}'.format(actualName, testName))
 
@@ -49,20 +49,22 @@ class JsonScrapperScrapperTestClass(unittest.TestCase):
     def test_recipe_ingredients(self):
 
         self.read_recipe_data()
-        actual_ingredients = ["1 teaspoon garlic powder",
-                             "1 teaspoon dried oregano",
-                             "1 teaspoon ground cumin",
-                             "1 teaspoon ground coriander",
-                             "1/2 teaspoon ground thyme",
-                             "1 teaspoon salt",
-                             "About 1 1/4 pounds pork tenderloin (This is where we buy our favorite pork tenderloin.*)",
-                             "1 tablespoon olive oil or avocado oil"]
-        actual_ingredients_str = ''
-        for recipe_instruction_item in actual_ingredients:
-            actual_ingredients_str += '{}\n'.format(recipe_instruction_item.strip())
+        actualIngredients = ['1 large portobello mushroom cap',
+                             '1 tablespoon coarsely chopped shallot',
+                             '3 tablespoons lightly packed fresh parsley',
+                             '1 1/4 pounds 85% to 93% lean ground turkey',
+                             '2 tablespoons extra-virgin olive oil, plus more for brushing',
+                             '1 teaspoon Worcestershire sauce',
+                             'Kosher salt and freshly ground pepper',
+                             '8 thin slices manchego or white cheddar cheese',
+                             '4 English muffins, split',
+                             'Dijon mustard, mayonnaise and sliced avocado, for topping']
+        actualIngredientsStr = ''
+        for recipe_instruction_item in actualIngredients:
+            actualIngredientsStr += '{}\n'.format(recipe_instruction_item.strip())
         testIngredients = self.recipeData['recipeIngredient']
         self.assertTrue(isinstance(testIngredients, str), 'Ingredients should be a list')
-        self.assertEqual(actual_ingredients_str, testIngredients, 'Recipe Ingredient Mismatch')
+        self.assertEqual(actualIngredientsStr, testIngredients, 'Recipe Ingredient Mismatch')
 
     def test_recipe_ingredients_ingredients_not_found(self):
 

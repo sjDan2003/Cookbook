@@ -4,7 +4,7 @@ import os
 from RecipeScrapers import JsonScraper
 
 
-class JsonScrapperScrapperTestClass(unittest.TestCase):
+class AnovaScrapperScrapperTestClass(unittest.TestCase):
 
 
     @classmethod
@@ -18,7 +18,7 @@ class JsonScrapperScrapperTestClass(unittest.TestCase):
             and call the recipe scraper to extract the data.
         """
 
-        with open(os.path.join(os.path.dirname(__file__),'testHtml/test_JsonTest2.html'), 'r') as in_html:
+        with open(os.path.join(os.path.dirname(__file__),'testHtml/test_Anova.html'), 'r') as in_html:
             soup = bs.BeautifulSoup(in_html.read(), 'lxml')
             self.recipeData = JsonScraper().extract_recipe_data(soup)
 
@@ -35,7 +35,7 @@ class JsonScrapperScrapperTestClass(unittest.TestCase):
     def test_recipe_name_get_correct_name(self):
 
         self.read_recipe_data()
-        actualName = 'Pork Tenderloin Rub'
+        actualName = 'Sous Vide Carnitas Tacos'
         testName = self.recipeData['name']
         self.assertEqual(actualName, testName, 'Recipe name mismath.\nExpected {}\nGot {}'.format(actualName, testName))
 
@@ -49,14 +49,19 @@ class JsonScrapperScrapperTestClass(unittest.TestCase):
     def test_recipe_ingredients(self):
 
         self.read_recipe_data()
-        actual_ingredients = ["1 teaspoon garlic powder",
-                             "1 teaspoon dried oregano",
-                             "1 teaspoon ground cumin",
-                             "1 teaspoon ground coriander",
-                             "1/2 teaspoon ground thyme",
-                             "1 teaspoon salt",
-                             "About 1 1/4 pounds pork tenderloin (This is where we buy our favorite pork tenderloin.*)",
-                             "1 tablespoon olive oil or avocado oil"]
+        actual_ingredients = ["1 1/2 pounds pork shoulder or country-style pork ribs, cut into 1-inch cubes",
+                              "1/2 medium onion, peeled",
+                              "1 tablespoon lime juice",
+                              "1 teaspoon kosher salt",
+                              "1/2 teaspoon cumin",
+                              "1/2 teaspoon dried oregano",
+                              "1 bay leaf",
+                              "1/2 orange",
+                              "Small corn tortillas, for serving",
+                              "Fresh cilantro leaves, for serving ",
+                              "Chopped white onion, for serving",
+                              "Thinly sliced red radishes, for serving",
+                              "Lime wedges, for serving"]
         actual_ingredients_str = ''
         for recipe_instruction_item in actual_ingredients:
             actual_ingredients_str += '{}\n'.format(recipe_instruction_item.strip())

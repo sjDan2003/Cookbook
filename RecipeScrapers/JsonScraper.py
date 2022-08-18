@@ -22,8 +22,11 @@ class JsonScraper():
         ingredients = ''
 
         if 'recipeIngredient' in json_dict:
+            print('recipeIngredient found')
             for ingredient in json_dict['recipeIngredient']:
                 ingredients += '{}\n'.format(ingredient)
+        else:
+            print('recipeIngredient not found')
 
         return ingredients
 
@@ -54,7 +57,7 @@ class JsonScraper():
                     # Some websites use a itemListElement for their
                     # ingredients.
                     if 'itemListElement' in instruction_list:
-                        item_list = item['itemListElement']
+                        item_list = instruction_list['itemListElement']
                         for item in item_list:
                             instructions += '{} \n'.format(item['text'].strip())
                     else:
@@ -82,9 +85,13 @@ class JsonScraper():
         recipe_name = ''
 
         if 'name' in json_dict:
+            print('Name found')
             recipe_name = json_dict['name']
         elif 'headline' in json_dict:
+            print('headline found')
             recipe_name = json_dict['headline']
+        else:
+            print('No expected tags found')
 
         return recipe_name
 
@@ -143,13 +150,29 @@ class JsonScraper():
             for recipe_data_json in recipe_data_json_list:
 
                 json_dict = json.loads(recipe_data_json.string)
+                print(json_dict)
+                final_json_dict = json_dict
                 if isinstance(json_dict, list):
-                    json_dict = json_dict[0]
+                    final_json_dict = json_dict[0]
+
+                if '@graph' in json_dict:
+                    for item in json_dict['@graph']:
+                        if '@context' in item:
+                            final_json_dict = item
+                            break
 
                 # TODO: Need to detect if two scripts have the same tags but different information
-                recipe_data['name'] = self.extract_recipe_name(json_dict)
-                recipe_data['recipeIngredient'] = self.extract_ingredients(json_dict)
-                recipe_data['recipeInstructions'] = self.extract_instructions(json_dict)
-                recipe_data['image'] = self.extract_recipe_image_url(json_dict)
+                if recipe_data['name'] == '':
+                    recipe_data['name'] = self.extract_recipe_name(final_json_dict)
+                if recipe_data['recipeIngredient'] == '':
+                    recipe_data['recipeIngredient'] = self.extract_ingredients(final_json_dict)
+                if recipe_data['recipeInstructions'] == '':
+                    recipe_data['recipeInstructions'] = self.extract_instructions(final_json_dict)
+                if recipe_data['image'] == '':
+                    recipe_data['image'] = self.extract_recipe_image_url(final_json_dict)
+
+        else:
+            print('Could not find application/ld+json')
+        print(recipe_data)
 
         return recipe_data
