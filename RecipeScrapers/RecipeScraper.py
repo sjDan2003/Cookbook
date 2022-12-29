@@ -65,8 +65,8 @@ class RecipeScraper:
 
         raw_html_data, status_code = self.get_html_data(url)
 
-        with open('../test_Annova.html', 'w') as f:
-            f.write(raw_html_data.decode("utf-8") )
+        with open('../test_went_there.html', 'w') as f:
+            f.write(raw_html_data.decode("utf-8", 'ignore') )
 
         # If there was an issue getting the HTML data, treat this as invalid data
         # and return.
